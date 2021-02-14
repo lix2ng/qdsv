@@ -33,7 +33,7 @@
 
 /* -----------------------------------------------------------------------------
  * K-f[800] in Thumb-2 assembler.
- * 728B, 27+344/r. 10r = 3467c or 51 c/b.
+ * 712B, 27+338/r. 10r = 3407c or 50 c/b.
  */
 #if defined(__thumb2__)
 void _align4 _naked kf800_permute(uint32_t *A, uint nr)
@@ -47,90 +47,81 @@ void _align4 _naked kf800_permute(uint32_t *A, uint nr)
       "cmp        lr, #" STR(KF800_MAXR) br
       "bhs        .L_done" br                   // 2c (4c for exit).
 
-// Theta, part 1. C[5] in r1-r5. 6+11x4+1=49c.
+// Theta, part 1. C[5] in r1-r5. 6+43+1=50c.
       "ldm        r0!, {r1-r5}" br
-      "ldm        r0!, {r6-r10}" br
+      "ldm        r0!, {r6-r12}" br
       "eors       r1, r6" br
       "eors       r2, r7" br
       "eor        r3, r8" br
       "eor        r4, r9" br
       "eor        r5, r10" br
+      "eor        r1, r11" br
+      "eor        r2, r12" br
 
-      "ldm        r0!, {r6-r10}" br
-      "eors       r1, r6" br
-      "eors       r2, r7" br
-      "eor        r3, r8" br
-      "eor        r4, r9" br
-      "eor        r5, r10" br
+      "ldm        r0!, {r6-r12}" br
+      "eors       r3, r6" br
+      "eors       r4, r7" br
+      "eor        r5, r8" br
+      "eor        r1, r9" br
+      "eor        r2, r10" br
+      "eor        r3, r11" br
+      "eor        r4, r12" br
 
-      "ldm        r0!, {r6-r10}" br
-      "eors       r1, r6" br
-      "eors       r2, r7" br
-      "eor        r3, r8" br
-      "eor        r4, r9" br
-      "eor        r5, r10" br
-
-      "ldm        r0!, {r6-r10}" br
-      "eors       r1, r6" br
-      "eors       r2, r7" br
-      "eor        r3, r8" br
-      "eor        r4, r9" br
-      "eor        r5, r10" br
+      "ldm        r0!, {r6-r11}" br
+      "eors       r5, r6" br
+      "eors       r1, r7" br
+      "eor        r2, r8" br
+      "eor        r3, r9" br
+      "eor        r4, r10" br
+      "eor        r5, r11" br
 
       "subs       r0, #100" br         // restore A
 
-// Theta, part 2. D[5] in r6-r10; r11 as temp. 10c
-      "ror        r11, r2, #31" br     // t = C[1] rol #1
-      "eor        r6, r5, r11" br      // D[0] = C[4] ^ t
-      "ror        r11, r3, #31" br     // t = C[2] rol #1
-      "eor        r7, r1, r11" br      // D[1] = C[0] ^ t
-      "ror        r11, r4, #31" br     // t = C[3] rol #1
-      "eor        r8, r2, r11" br      // D[2] = C[1] ^ t
-      "ror        r11, r5, #31" br     // t = C[4] rol #1
-      "eor        r9, r3, r11" br      // D[3] = C[2] ^ t
-      "ror        r11, r1, #31" br     // t = C[0] rol #1
-      "eor        r10, r4, r11" br     // D[4] = C[3] ^ t
+// Theta, part 2. D[5] in r8-r12. 5c
+      "eor        r8, r5, r2, ror #31" br    // D0 = C4 ^ (C1 <<< 1)
+      "eor        r9, r1, r3, ror #31" br    // D1 = C0 ^ (C2 <<< 1)
+      "eor        r10, r2, r4, ror #31" br   // D2 = C1 ^ (C3 <<< 1)
+      "eor        r11, r3, r5, ror #31" br   // D3 = C2 ^ (C4 <<< 1)
+      "eor        r12, r4, r1, ror #31" br   // D4 = C3 ^ (C0 <<< 1)
 
-// Theta, part 3. A[5n..5n+4] in r1-r5. 17x5+1=86c.
-      "ldm        r0, {r1-r5}" br
-      "eors       r1, r6" br
-      "eors       r2, r7" br
-      "eor        r3, r8" br
-      "eor        r4, r9" br
-      "eor        r5, r10" br
-      "stm        r0!, {r1-r5}" br
+// Theta, part 3. A[] in r1-r7 (7,7,7,4 batches). 23x3+14+1=84c.
+      "ldm        r0, {r1-r7}" br
+      "eor        r1, r8" br
+      "eor        r2, r9" br
+      "eor        r3, r10" br
+      "eor        r4, r11" br
+      "eor        r5, r12" br
+      "eor        r6, r8" br
+      "eor        r7, r9" br
+      "stm        r0!, {r1-r7}" br
 
-      "ldm        r0, {r1-r5}" br
-      "eors       r1, r6" br
-      "eors       r2, r7" br
-      "eor        r3, r8" br
-      "eor        r4, r9" br
-      "eor        r5, r10" br
-      "stm        r0!, {r1-r5}" br
+      "ldm        r0, {r1-r7}" br
+      "eor        r1, r10" br
+      "eor        r2, r11" br
+      "eor        r3, r12" br
+      "eor        r4, r8" br
+      "eor        r5, r9" br
+      "eor        r6, r10" br
+      "eor        r7, r11" br
+      "stm        r0!, {r1-r7}" br
 
-      "ldm        r0, {r1-r5}" br
-      "eors       r1, r6" br
-      "eors       r2, r7" br
-      "eor        r3, r8" br
-      "eor        r4, r9" br
-      "eor        r5, r10" br
-      "stm        r0!, {r1-r5}" br
+      "ldm        r0, {r1-r7}" br
+      "eor        r1, r12" br
+      "eor        r2, r8" br
+      "eor        r3, r9" br
+      "eor        r4, r10" br
+      "eor        r5, r11" br
+      "eor        r6, r12" br
+      "eor        r7, r8" br
+      "stm        r0!, {r1-r7}" br
 
-      "ldm        r0, {r1-r5}" br
-      "eors       r1, r6" br
-      "eors       r2, r7" br
-      "eor        r3, r8" br
-      "eor        r4, r9" br
-      "eor        r5, r10" br
-      "stm        r0!, {r1-r5}" br
+      "ldm        r0, {r1-r4}" br
+      "eor        r1, r9" br
+      "eor        r2, r10" br
+      "eor        r3, r11" br
+      "eor        r4, r12" br
+      "stm        r0!, {r1-r4}" br
 
-      "ldm        r0, {r1-r5}" br
-      "eors       r1, r6" br
-      "eors       r2, r7" br
-      "eor        r3, r8" br
-      "eor        r4, r9" br
-      "eor        r5, r10" br
-      "stm        r0!, {r1-r5}" br
       "subs       r0, #100" br
 
 // Rho & Pi. 6 elements per batch, using r1-r6, r7-r12. 18+19+19+20=76c.
@@ -146,7 +137,7 @@ void _align4 _naked kf800_permute(uint32_t *A, uint nr)
       "ror        r10, r4, #22" br
       "ror        r11, r5, #17" br
       "ror        r12, r6, #11" br
-      "str.w      r7, [r0, #10*4]" br  // alignment
+      "str        r7, [r0, #10*4]" br
       "str        r8, [r0, #7*4]" br
       "str        r9, [r0, #11*4]" br
       "str        r10, [r0, #17*4]" br
@@ -165,7 +156,7 @@ void _align4 _naked kf800_permute(uint32_t *A, uint nr)
       "ror        r10, r4, #9" br
       "ror        r11, r5, #30" br
       "ror        r12, r6, #18" br
-      "str.w      r7, [r0, #5*4]" br   // alignment
+      "str        r7, [r0, #5*4]" br
       "str        r8, [r0, #16*4]" br
       "str        r9, [r0, #8*4]" br
       "str        r10, [r0, #21*4]" br
@@ -184,7 +175,7 @@ void _align4 _naked kf800_permute(uint32_t *A, uint nr)
       "ror        r10, r4, #24" br
       "ror        r11, r5, #7" br
       "ror        r12, r6, #21" br
-      "str.w      r7, [r0, #15*4]" br  // alignment
+      "str        r7, [r0, #15*4]" br
       "str        r8, [r0, #23*4]" br
       "str        r9, [r0, #19*4]" br
       "str        r10, [r0, #13*4]" br
@@ -203,7 +194,7 @@ void _align4 _naked kf800_permute(uint32_t *A, uint nr)
       "ror        r10, r4, #3" br
       "ror        r11, r5, #12" br
       "ror        r12, r6, #20" br
-      "str.w      r7, [r0, #20*4]" br  // alignment
+      "str        r7, [r0, #20*4]" br
       "str        r8, [r0, #14*4]" br
       "str        r9, [r0, #22*4]" br
       "str        r10, [r0, #9*4]" br
@@ -284,9 +275,9 @@ void _align4 _naked kf800_permute(uint32_t *A, uint nr)
       "eors       r1, r2" br
       "str        r1, [r0, #0]" br
       "add        lr, #1" br
-      "b.w        .L_round" br
+      "b          .L_round" br
 
-// Total 344c per round.
+// Total 338c per round.
    ".L_done:" br
       "pop        {r4-r11, pc}" br
 
