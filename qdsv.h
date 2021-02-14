@@ -9,9 +9,9 @@
 #define QDSV_H_
 
 /* Lengths are in bytes, all fixed. */
-#define QDSV_SIG_LEN 64
-#define QDSV_PK_LEN 32
-#define QDSV_MSG_LEN 32
+#define QDSA_SIG_LEN 64
+#define QDSA_PK_LEN 32
+#define QDSA_MSG_LEN 32
 
 /*
  * Return 0 if verification passed successfully.

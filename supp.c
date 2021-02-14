@@ -19,6 +19,7 @@
 #define CONF_KF800_FULLR 0
 #endif
 
+#define BOBJR_RATE 68
 #define BOBJR_NROUNDS 10
 
 #if CONF_KF800_FULLR
@@ -450,13 +451,6 @@ void kf800_permute(uint32_t *A, uint nr)
    }
 }
 #endif  // C version.
-
-/* -------------------------------------------------------------------------- */
-void bobjr_init(bobjr_ctx *ctx)
-{
-   // Also clears ptr.
-   wam_zero(ctx, sizeof(bobjr_ctx));
-}
 
 /* -------------------------------------------------------------------------- */
 void bobjr_absorb_wa(bobjr_ctx *ctx, const uint8_t *data, uint len)

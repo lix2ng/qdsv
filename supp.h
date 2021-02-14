@@ -42,17 +42,20 @@ void wam_swap(void *a, void *b, uint len);
  *  - Mode = overwrite
  *  - Rate = 68B
  *  - Capacity = 256b
- *  - Rounds: 10 for general use
+ *  - Rounds = 10 for general use
  */
-
-#define BOBJR_RATE 68
 
 typedef struct bobjr_ctx {
    uint32_t ptr;                   // read/write pointer into state.
    uint8_t _align4 state[25 * 4];  // the 25 words Keccak state.
 } bobjr_ctx;
 
-void bobjr_init(bobjr_ctx *ctx);
+static inline void bobjr_init(bobjr_ctx *ctx)
+{
+   // Also clears ptr.
+   wam_zero(ctx, sizeof(bobjr_ctx));
+}
+
 /* "wa" suffix denotes word aligned operations. */
 void bobjr_absorb_wa(bobjr_ctx *ctx, const uint8_t *data, uint len);
 void bobjr_finish_wa(bobjr_ctx *ctx);

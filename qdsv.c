@@ -430,7 +430,7 @@ static const uint8_t mu_3 = 0x13;
 static const uint8_t mu_4 = 0x03;
 
 #if CONF_QDSA_FULL
-/* Constant time conditional kpoint swap for Ladder. */
+/* Conditional kpoint swap for constant-time Ladder. */
 static void ct_swap(kpoint *x, kpoint *y, int b)
 {
    uint32_t *X = (uint32_t *)x;
