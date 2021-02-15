@@ -1,8 +1,5 @@
 /*
  * Assembler routines for Fp=2^127-1.
- *
- * Optimized for both M0 and M4. M3 can be supported if UMAAL is replaced with
- * non-DSP instructions.
  */
 
 /* -----------------------------------------------------------------------------
@@ -276,7 +273,7 @@ void _alfn _naked fe1271_mulconst(fe1271 *r, const fe1271 *x, uint16_t y)
       "stm        r0!, {r1, r3-r5}" br
       "pop        {r4-r9}" br
       "bx         lr" br
-      : : : "r0", "r1", "r3","r12","cc","memory" // r2 remains
+      : : : "r0","r1","r3","r12","cc","memory" // r2 remains
 #else
       "push       {r4-r7}" br
       "ldrh       r3, [r1]" br
@@ -355,10 +352,7 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
    asm(
       ".syntax unified" br
 #ifdef __thumb2__
-      /*
-       * Managed to save 49c by taking advantage of Thumb-2's larger usable
-       * register set (14 vs. 8).
-       */
+      // Saved 49c, 98.5Kc in total.
       "push       {r4-r9, lr}" br
       "ldm        r1!, {r8, r9, r12, lr}" br
       "ldm        r1, {r2-r5}" br
@@ -755,8 +749,8 @@ void _alfn _naked bigint_red(uint32_t *r, const uint32_t *a)
    asm(
       ".syntax unified" br
 #ifdef __thumb2__
-      // Just 8c less than the Thumb-1 version, but over 10K runs it saves
-      // 81Kc in signature verification.
+      // Just 8c less than the Thumb-1 version, but over 10K runs it saves 81Kc
+      // in signature verification.
       "push       {r4-r8}" br
       "ldm        r1, {r2-r8, r12}" br
 
@@ -868,52 +862,134 @@ void _alfn _naked bigint_sqr(uint32_t *r, const uint32_t *x)
    asm(
       ".syntax unified" br
       "mov.w      r2, r1" br
-      /*
-       * Thumb-2 MUL is fast enough, use it for SQR too.
-       * This sequence is lifted from FourQ with slight changes.
-       */
+      // Thumb-2 MUL is fast enough, use it for SQR too.
       ".thumb_func" br
-   "bigint_mul:" br
       // ".global    bigint_mul" br
-
-      "push       {r4-r11}" br
+   "bigint_mul:" br
+#ifdef __ARM_FEATURE_DSP
+      /*
+       * Thumb-2 with DSP Extension (UMAAL).
+       * The following is based on FourQ's code with further improvements. It
+       * saves/restores 2 less registers and has instructions rescheduled for
+       * better pipelining. This may save up to 13c per run or ~132Kc total.
+       */
+      "push       {r4-r10}" br
       "ldm        r1!, {r3-r6}" br
-      "ldr        r7, [r2]" br
-      "umull      r9, r8, r7, r3" br
+      "ldr        r1, [r2]" br
+      "umull      r8, r7, r1, r3" br
+      "mov        r9, #0" br
+      "umlal      r7, r9, r1, r4" br
       "mov        r10, #0" br
-      "umlal      r8, r10, r7, r4" br
-      "mov        r11, #0" br
-      "umlal      r10, r11, r7, r5" br
-      "mov        r12, #0" br
-      "umlal      r11, r12, r7, r6" br
-      "ldr        r7, [r2, #4]" br
-      "str        r9, [r0], #4" br
-      "mov        r9, #0" br
-
-      "umlal      r8, r9, r7, r3" br
-      "umaal      r9, r10, r7, r4" br
-      "umaal      r10, r11, r7, r5" br
-      "umaal      r11, r12, r7, r6" br
-      "ldr        r7, [r2, #8]" br
+      "umlal      r9, r10, r1, r5" br
       "str        r8, [r0], #4" br
+      "mov        r12, #0" br
+      "umlal      r10, r12, r1, r6" br
+
+      "ldr        r1, [r2, #4]" br
       "mov        r8, #0" br
+      "umlal      r7, r8, r1, r3" br
+      "umaal      r8, r9, r1, r4" br
+      "str        r7, [r0], #4" br
+      "umaal      r9, r10, r1, r5" br
+      "umaal      r10, r12, r1, r6" br
 
-      "umlal      r9, r8, r7, r3" br
-      "umaal      r8, r10, r7, r4" br
-      "umaal      r10, r11, r7, r5" br
-      "umaal      r11, r12, r7, r6" br
-      "ldr        r7, [r2, #12]" br
-      "str        r9, [r0], #4" br
-      "mov        r9, #0" br
+      "ldr        r1, [r2, #8]" br
+      "mov        r7, #0" br
+      "umlal      r8, r7, r1, r3" br
+      "umaal      r7, r9, r1, r4" br
+      "str        r8, [r0], #4" br
+      "umaal      r9, r10, r1, r5" br
+      "umaal      r10, r12, r1, r6" br
 
-      "umlal      r8, r9, r7, r3" br
-      "umaal      r9, r10, r7, r4" br
-      "umaal      r10, r11, r7, r5" br
-      "umaal      r11, r12, r7, r6" br
-      "stm        r0!, {r8-r12}" br
-      "pop        {r4-r11}" br
+      "ldr        r1, [r2, #12]" br
+      "mov        r8, #0" br
+      "umlal      r7, r8, r1, r3" br
+      "umaal      r8, r9, r1, r4" br
+      "umaal      r9, r10, r1, r5" br
+      "umaal      r10, r12, r1, r6" br
+      "stm        r0!, {r7-r10, r12}" br
+      "pop        {r4-r10}" br
       "bx         lr" br
       : : : "r0","r1","r2","r3","r12","cc","memory"
+#else
+      /*
+       * Thumb-2 without UMAAL (preliminary, needs refinement).
+       * Straight translation from UMAAL to UMULL and ADD/ADC sequence.
+       */
+      "push       {r4-r11, lr}" br
+      "ldm        r1!, {r3-r6}" br
+      "ldr        r1, [r2]" br
+      "umull      r8, r7, r1, r3" br
+      "mov        r9, #0" br
+      "umlal      r7, r9, r1, r4" br
+      "mov        r10, #0" br
+      "umlal      r9, r10, r1, r5" br
+      "mov        r12, #0" br
+      "umlal      r10, r12, r1, r6" br
+      "str        r8, [r0], #4" br
+
+      "ldr        r1, [r2, #4]" br
+      "mov        r8, #0" br
+      "umlal      r7, r8, r1, r3" br
+      "umull      r11, lr, r1, r4" br
+      "adds       r11, r9" br
+      "adc        lr, #0" br
+      "adds       r8, r11" br
+      "adc        r9, lr, #0" br
+      "umull      r11, lr, r1, r5" br
+      "adds       r11, r10" br
+      "adc        lr, #0" br
+      "adds       r9, r11" br
+      "adc        r10, lr, #0" br
+      "umull      r11, lr, r1, r6" br
+      "adds       r11, r12" br
+      "adc        lr, #0" br
+      "adds       r10, r11" br
+      "adc        r12, lr, #0" br
+      "str        r7, [r0], #4" br
+
+      "ldr        r1, [r2, #8]" br
+      "mov        r7, #0" br
+      "umlal      r8, r7, r1, r3" br
+      "umull      r11, lr, r1, r4" br
+      "adds       r11, r9" br
+      "adc        lr, #0" br
+      "adds       r7, r11" br
+      "adc        r9, lr, #0" br
+      "umull      r11, lr, r1, r5" br
+      "adds       r11, r10" br
+      "adc        lr, #0" br
+      "adds       r9, r11" br
+      "adc        r10, lr, #0" br
+      "umull      r11, lr, r1, r6" br
+      "adds       r11, r12" br
+      "adc        lr, #0" br
+      "adds       r10, r11" br
+      "adc        r12, lr, #0" br
+      "str        r8, [r0], #4" br
+
+      "ldr        r1, [r2, #12]" br
+      "mov        r8, #0" br
+      "umlal      r7, r8, r1, r3" br
+      "umull      r11, lr, r1, r4" br
+      "adds       r11, r9" br
+      "adc        lr, #0" br
+      "adds       r8, r11" br
+      "adc        r9, lr, #0" br
+      "umull      r11, lr, r1, r5" br
+      "adds       r11, r10" br
+      "adc        lr, #0" br
+      "adds       r9, r11" br
+      "adc        r10, lr, #0" br
+      "umull      r11, lr, r1, r6" br
+      "adds       r11, r12" br
+      "adc        lr, #0" br
+      "adds       r10, r11" br
+      "adc        r12, lr, #0" br
+      "stm        r0!, {r7-r10, r12}" br
+      "pop        {r4-r11, pc}" br
+      : : : "r0","r1","r2","r3","r12","lr","cc","memory"
+#endif
    );
    // clang-format on
 }

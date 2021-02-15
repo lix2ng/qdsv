@@ -1,10 +1,13 @@
 # qDSA
 
-This is qDSA, the quotient Digital Signature Algorithm by Joost Renes. I have modified it to better support Cortex-M4. It's intended for use in a bootloader for secure firmware updates. Since verifier is the main focus, I named the package "qdsv". The signing and DH routines are still available in the source.
 
-This code is in Public Domain without any warranty; please read the LICENSE. Bugfixes are welcome.
+This is qDSA, the quotient Digital Signature Algorithm by Joost Renes. I have modified the original Cortex-M0 code to better support Cortex-M4. Now with Cortex-M3 being added to the list, practically all Cortex-M cores can run at optimized speed -- Well, almost there; support for Thumb-2 without UMAAL instruction, namely M3 and M33+nodsp, still has room for improvement.
 
-You need arm-none-eabi-gcc to compile. Details are all in the code comments.
+It's intended for use in a bootloader for Secure Firmware Update or Secure Boot. Since verifier was my main focus, I named the package "qdsv". The signing and DH routines are still available in the source.
+
+You'll need arm-none-eabi-gcc to compile. Details are all in the code comments.
+
+This code is in Public Domain without any warranty; please read the LICENSE. Bug fixes, performance reports and improvements are all welcome.
 
 ## The interface
 
@@ -28,7 +31,7 @@ You need arm-none-eabi-gcc to compile. Details are all in the code comments.
      * Modifications:
      *  - C files are merged and cleaned up.
      *  - assembly files are put together and made EABI compliant.
-     *  - add optimized assemblers for Cortex-M4.
+     *  - add optimized assemblers for Cortex-M4 and Cortex-M3.
      *  - use Bob Jr. as the hash function (reduced round Keccak-f[800]).
      *  - use WAM for fast copy/zeroize/swap on small aligned memory blocks.
      *  - use variable-time swap in verifier-only compile (saves ~140Kc).
@@ -38,9 +41,10 @@ You need arm-none-eabi-gcc to compile. Details are all in the code comments.
      *  - message size is fixed to 32 bytes.
      *  - signature, public key and message are required to be word-aligned.
      *
-     * Current verifier performance [1f2a]:
-     *    M0: 5096Kc (106ms on 48MHz M0), 6040B code, 752B stack.
-     *    M4: 2918Kc (2345Kc ideal. 37-46ms on 64MHz M4), 5034B, 728B.
+     * Current verifier performance [1f2f]:
+     *    M0: 5096Kc (106ms on 48MHz M0), 6040B Flash, 752B stack.
+     *    M3: 3658Kc (57ms on 64MHz M3),  5178B Flash, 732B stack.
+     *    M4: 2897Kc (45ms on 64MHz M4),  5034B Flash, 724B stack.
      *
      * Ref: arm-none-eabi-gcc 7.3.1 20180622 (release). Numbers are obtained on
      * uVision simulator -- which doesn't consider slow Flash wait cycles nor

@@ -7,19 +7,20 @@
  * Modifications:
  *  - C files are merged and cleaned up.
  *  - assembly files are put together and made EABI compliant.
- *  - add optimized assemblers for Cortex-M4.
+ *  - add optimized assemblers for Cortex-M4 and Cortex-M3.
  *  - use Bob Jr. as the hash function (reduced round Keccak-f[800]).
  *  - use WAM for fast copy/zeroize/swap on small aligned memory blocks.
- *  - use variable-time swap in verifier-only compile (saves ~140Kc).
+ *  - use variable-time Ladder swap in verifier-only compile (saves ~140Kc).
  *  - interfaces are changed for convenience.
  *
  * Limitations:
  *  - message size is fixed to 32 bytes.
  *  - signature, public key and message are required to be word-aligned.
  *
- * Current verifier performance [1f2a]:
- *    M0: 5096Kc (106ms on 48MHz M0), 6040B code, 752B stack.
- *    M4: 2918Kc (2345Kc ideal. 37-46ms on 64MHz M4), 5034B, 728B.
+ * Current verifier performance [1f2f]:
+ *    M0: 5096Kc (106ms on 48MHz M0), 6040B Flash, 752B stack.
+ *    M3: 3658Kc (57ms on 64MHz M3),  5178B Flash, 732B stack.
+ *    M4: 2897Kc (45ms on 64MHz M4),  5034B Flash, 724B stack.
  *
  * Ref: arm-none-eabi-gcc 7.3.1 20180622 (release). Numbers are obtained on
  * uVision simulator -- which doesn't consider slow Flash wait cycles nor
