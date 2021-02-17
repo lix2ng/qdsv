@@ -91,9 +91,11 @@ void _naked fe1271_sub(fe1271 *r, const fe1271 *x, const fe1271 *y)
       "sbcs       r5, r7" br
       "sbcs       r6, r7" br
       "sbcs       r7, r7" br // take carry
-      "rsbs       r7, #0" br
+//      "rsbs       r7, #0" br
       "lsls       r7, #1" br
-      "subs       r3, r7" br
+//      "subs       r3, r7" br
+// When carry is irrelevant it's safe to replace NEG-SUB with ADD.
+      "adds       r3, r7" br
       "stm        r0!, {r3-r6}" br
       "pop        {r4-r7}" br
       "bx         lr" br
@@ -136,12 +138,28 @@ void _naked fe1271_neg(fe1271 *x)
    // clang-format off
    asm(
       ".syntax unified" br
-      "push       {r4-r7}" br
 #ifdef __thumb2__
+      "push       {r4-r7}" br
+      "movs       r7, #0" br
       "ldm        r0, {r3-r6}" br
+      "rsbs       r1, r3, #0" br
+      "sbcs       r2, r7, r4" br
+      "sbcs       r3, r7, r5" br
+      "sbcs       r7, r7, r6" br
+      "movs       r4, #0" br
+      "sbcs       r4, r4" br
+      "rsbs       r4, #0" br
+      "subs       r1, r1, r4, lsl #1" br
+      "sbcs       r2, #0" br
+      "sbcs       r3, #0" br
+      "sbc        r7, #0" br
+      "stm        r0!, {r1-r3, r7}" br
+      "pop        {r4-r7}" br
+      "bx         lr" br
+      : : : "r0","r1","r2","r3","cc","memory"
 #else
+      "push       {r4-r7}" br
       "ldm        r0!, {r3-r6}" br
-#endif
       "rsbs       r1, r3, #0" br
       "bics       r2, r2" br
       "sbcs       r2, r4" br
@@ -152,12 +170,6 @@ void _naked fe1271_neg(fe1271 *x)
       "bics       r4, r4" br
       "sbcs       r4, r4" br
       "rsbs       r4, #0" br
-#ifdef __thumb2__
-      "subs       r1, r1, r4, lsl #1" br
-      "sbcs       r2, #0" br
-      "sbcs       r3, #0" br
-      "sbcs       r7, #0" br
-#else
       "lsls       r4, #1" br
       "subs       r1, r4" br
       "bics       r4, r4" br
@@ -165,11 +177,11 @@ void _naked fe1271_neg(fe1271 *x)
       "sbcs       r3, r4" br
       "sbcs       r7, r4" br
       "subs       r0, #16" br
-#endif
       "stm        r0!, {r1, r2, r3, r7}" br
       "pop        {r4-r7}" br
       "bx         lr" br
       : : : "r0","r1","r2","r3","cc","memory"
+#endif
    );
    // clang-format on
 }
@@ -243,7 +255,7 @@ void fe1271_freeze(fe1271 *x)
 
 /* -----------------------------------------------------------------------------
  * Mulconst: 6172 invocations.
- * Maximum 16b const is 0xabd7.
+ * Maximum 16b constant is 0xabd7.
  */
 #ifdef __thumb__
 void _alfn _naked fe1271_mulconst(fe1271 *r, const fe1271 *x, uint16_t y)
@@ -252,6 +264,7 @@ void _alfn _naked fe1271_mulconst(fe1271 *r, const fe1271 *x, uint16_t y)
    asm(
       ".syntax unified" br
 #ifdef __thumb2__
+      // M4 pipline -3c uV miscount -6c
       "push       {r4-r9}" br
       "ldm        r1, {r7-r9, r12}" br
       "umull      r1, r3, r2, r7" br
@@ -385,8 +398,10 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       "sbcs       r4, r7" br
       "sbcs       r5, r7" br
       "sbcs       r7, r7" br // take carry
-      "rsbs       r7, #0" br
-      "sub        r3, r3, r7, lsl #1" br
+//      "rsbs       r7, #0" br
+//      "sub        r3, r3, r7, lsl #1" br
+      "add        r3, r3, r7, lsl #1" br
+
       "stm        r0!, {r2-r5}" br // a[1]-a[0]
 
       "ldm        r1!, {r2-r9}" br // a[2] & a[3] lower 2 in r6, r7
@@ -424,8 +439,9 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       "sbcs       r4, r7" br
       "sbcs       r5, r7" br
       "sbcs       r7, r7" br // take carry
-      "rsbs       r7, #0" br
-      "sub        r3, r3, r7, lsl #1" br
+//      "rsbs       r7, #0" br
+//      "sub        r3, r3, r7, lsl #1" br
+      "add        r3, r3, r7, lsl #1" br
       "adds       r0, #16" br
       "stm        r0!, {r2-r5}" br
 
@@ -445,8 +461,9 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       "sbcs       r4, r7" br
       "sbcs       r5, r7" br
       "sbcs       r7, r7" br // take carry
-      "rsbs       r7, #0" br
-      "sub        r3, r3, r7, lsl #1" br
+//      "rsbs       r7, #0" br
+//      "sub        r3, r3, r7, lsl #1" br
+      "add        r3, r3, r7, lsl #1" br
       "adds       r0, #16" br // pointer to r[2]
       "stm        r0!, {r2-r5}" br
 
@@ -502,8 +519,9 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       "sbcs       r4, r7" br
       "sbcs       r5, r7" br
       "sbcs       r7, r7" br // take carry
-      "rsbs       r7, #0" br
-      "sub        r3, r3, r7, lsl #1" br
+//      "rsbs       r7, #0" br
+//      "sub        r3, r3, r7, lsl #1" br
+      "add        r3, r3, r7, lsl #1" br
       "stm        r0!, {r2-r5}" br
       "pop        {r4-r9, pc}" br
       : : : "r0","r1","r2","r3","r12","lr","cc","memory"
@@ -562,9 +580,10 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       "sbcs       r4, r7" br
       "sbcs       r5, r7" br
       "sbcs       r7, r7" br // take carry
-      "rsbs       r7, #0" br
+//      "rsbs       r7, #0" br
       "lsls       r7, #1" br
-      "subs       r3, r7" br
+//      "subs       r3, r7" br
+      "adds       r3, r7" br
       "stm        r0!, {r2-r5}" br // a[1]-a[0]
 
       "ldm        r1!, {r2-r7}" br // a[2] & a[3] lower 2 in r6, r7
@@ -607,9 +626,10 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       "sbcs       r4, r7" br
       "sbcs       r5, r7" br
       "sbcs       r7, r7" br // take carry
-      "rsbs       r7, #0" br
+//      "rsbs       r7, #0" br
       "lsls       r7, #1" br
-      "subs       r3, r7" br
+//      "subs       r3, r7" br
+      "adds       r3, r7" br
       "adds       r0, #16" br
       "stm        r0!, {r2-r5}" br
 
@@ -635,9 +655,10 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       "sbcs       r4, r7" br
       "sbcs       r5, r7" br
       "sbcs       r7, r7" br // take carry
-      "rsbs       r7, #0" br
+//      "rsbs       r7, #0" br
       "lsls       r7, #1" br
-      "subs       r3, r7" br
+//      "subs       r3, r7" br
+      "adds       r3, r7" br
       "adds       r0, #16" br // pointer to r[2]
       "stm        r0!, {r2-r5}" br
 
@@ -708,9 +729,10 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       "sbcs       r4, r7" br
       "sbcs       r5, r7" br
       "sbcs       r7, r7" br // take carry
-      "rsbs       r7, #0" br
+//      "rsbs       r7, #0" br
       "lsls       r7, #1" br
-      "subs       r3, r7" br
+//      "subs       r3, r7" br
+      "adds       r3, r7" br
       "subs       r0, #16" br
       "stm        r0!, {r2-r5}" br
       "pop        {r2, r3}" br
@@ -868,125 +890,133 @@ void _alfn _naked bigint_sqr(uint32_t *r, const uint32_t *x)
    "bigint_mul:" br
 #ifdef __ARM_FEATURE_DSP
       /*
-       * Thumb-2 with DSP Extension (UMAAL).
-       * The following is based on FourQ's code with further improvements. It
-       * saves/restores 2 less registers and has instructions rescheduled for
-       * better pipelining. This may save up to 13c per run or ~132Kc total.
+       * Thumb-2 with DSP Extension (UMAAL). uV:110c; real ~101c.
+       * The following is based on FourQ's code with further improvements:
+       *  - save & restore 7 instead of 9 registers (-4c)
+       *  - hide MOV and STR in delay slots (-3c or more)
+       *  - STM broken down and scattered into delay slots (-4c)
+       *  - register reallocation: this enables more T-1 encodings, saves bytes
+       *    despite STM breaking down (-10B)
        */
       "push       {r4-r10}" br
-      "ldm        r1!, {r3-r6}" br
+      "ldm        r1, {r8-r10, r12}" br
       "ldr        r1, [r2]" br
-      "umull      r8, r7, r1, r3" br
-      "mov        r9, #0" br
-      "umlal      r7, r9, r1, r4" br
-      "mov        r10, #0" br
-      "umlal      r9, r10, r1, r5" br
-      "str        r8, [r0], #4" br
-      "mov        r12, #0" br
-      "umlal      r10, r12, r1, r6" br
+      "umull      r4, r3, r1, r8" br
+      "movs       r5, #0" br
+      "umlal      r3, r5, r1, r9" br
+      "movs       r6, #0" br
+      "umlal      r5, r6, r1, r10" br
+      "str        r4, [r0]" br
+      "movs       r7, #0" br
+      "umlal      r6, r7, r1, r12" br
 
       "ldr        r1, [r2, #4]" br
-      "mov        r8, #0" br
-      "umlal      r7, r8, r1, r3" br
-      "umaal      r8, r9, r1, r4" br
-      "str        r7, [r0], #4" br
-      "umaal      r9, r10, r1, r5" br
-      "umaal      r10, r12, r1, r6" br
+      "movs       r4, #0" br
+      "umlal      r3, r4, r1, r8" br
+      "umaal      r4, r5, r1, r9" br
+      "str        r3, [r0, #4]" br
+      "umaal      r5, r6, r1, r10" br
+      "umaal      r6, r7, r1, r12" br
 
       "ldr        r1, [r2, #8]" br
-      "mov        r7, #0" br
-      "umlal      r8, r7, r1, r3" br
-      "umaal      r7, r9, r1, r4" br
-      "str        r8, [r0], #4" br
-      "umaal      r9, r10, r1, r5" br
-      "umaal      r10, r12, r1, r6" br
-
+      "movs       r3, #0" br
+      "umlal      r4, r3, r1, r8" br
+      "umaal      r3, r5, r1, r9" br
+      "str        r4, [r0, #8]" br
+      "umaal      r5, r6, r1, r10" br
+      "umaal      r6, r7, r1, r12" br
       "ldr        r1, [r2, #12]" br
-      "mov        r8, #0" br
-      "umlal      r7, r8, r1, r3" br
-      "umaal      r8, r9, r1, r4" br
-      "umaal      r9, r10, r1, r5" br
-      "umaal      r10, r12, r1, r6" br
-      "stm        r0!, {r7-r10, r12}" br
+      "movs       r4, #0" br
+
+      "umlal      r3, r4, r1, r8" br
+      "str        r3, [r0, #12]" br
+      "umaal      r4, r5, r1, r9" br
+      "str        r4, [r0, #16]" br
+      "umaal      r5, r6, r1, r10" br
+      "str        r5, [r0, #20]" br
+      "umaal      r6, r7, r1, r12" br
+      "str        r6, [r0, #24]" br
+      "str        r7, [r0, #28]" br
       "pop        {r4-r10}" br
       "bx         lr" br
       : : : "r0","r1","r2","r3","r12","cc","memory"
 #else
       /*
-       * Thumb-2 without UMAAL (preliminary, needs refinement).
-       * Straight translation from UMAAL to UMULL and ADD/ADC sequence.
+       * Thumb-2 without UMAAL. uV:181c
+       * Translate UMAAL to UMULL and 2 ADD/ADC pairs. slightly better than
+       * MOV #0, UMLAL and 1 ADD/ADC pair.
        */
       "push       {r4-r11, lr}" br
-      "ldm        r1!, {r3-r6}" br
+      "ldm        r1, {r8-r11}" br
       "ldr        r1, [r2]" br
-      "umull      r8, r7, r1, r3" br
-      "mov        r9, #0" br
-      "umlal      r7, r9, r1, r4" br
-      "mov        r10, #0" br
-      "umlal      r9, r10, r1, r5" br
+      "umull      r4, r3, r1, r8" br
+      "movs       r5, #0" br
+      "umlal      r3, r5, r1, r9" br
+      "movs       r6, #0" br
+      "umlal      r5, r6, r1, r10" br
       "mov        r12, #0" br
-      "umlal      r10, r12, r1, r6" br
-      "str        r8, [r0], #4" br
+      "umlal      r6, r12, r1, r11" br
+      "str        r4, [r0], #4" br
 
       "ldr        r1, [r2, #4]" br
-      "mov        r8, #0" br
-      "umlal      r7, r8, r1, r3" br
-      "umull      r11, lr, r1, r4" br
-      "adds       r11, r9" br
+      "movs       r4, #0" br
+      "umlal      r3, r4, r1, r8" br
+      "umull      r7, lr, r1, r9" br
+      "adds       r7, r5" br
       "adc        lr, #0" br
-      "adds       r8, r11" br
-      "adc        r9, lr, #0" br
-      "umull      r11, lr, r1, r5" br
-      "adds       r11, r10" br
+      "adds       r4, r7" br
+      "adc        r5, lr, #0" br
+      "umull      r7, lr, r1, r10" br
+      "adds       r7, r6" br
       "adc        lr, #0" br
-      "adds       r9, r11" br
-      "adc        r10, lr, #0" br
-      "umull      r11, lr, r1, r6" br
-      "adds       r11, r12" br
+      "adds       r5, r7" br
+      "adc        r6, lr, #0" br
+      "umull      r7, lr, r1, r11" br
+      "adds       r7, r12" br
       "adc        lr, #0" br
-      "adds       r10, r11" br
+      "adds       r6, r7" br
       "adc        r12, lr, #0" br
-      "str        r7, [r0], #4" br
+      "str        r3, [r0], #4" br
 
       "ldr        r1, [r2, #8]" br
-      "mov        r7, #0" br
-      "umlal      r8, r7, r1, r3" br
-      "umull      r11, lr, r1, r4" br
-      "adds       r11, r9" br
+      "movs       r3, #0" br
+      "umlal      r4, r3, r1, r8" br
+      "umull      r7, lr, r1, r9" br
+      "adds       r7, r5" br
       "adc        lr, #0" br
-      "adds       r7, r11" br
-      "adc        r9, lr, #0" br
-      "umull      r11, lr, r1, r5" br
-      "adds       r11, r10" br
+      "adds       r3, r7" br
+      "adc        r5, lr, #0" br
+      "umull      r7, lr, r1, r10" br
+      "adds       r7, r6" br
       "adc        lr, #0" br
-      "adds       r9, r11" br
-      "adc        r10, lr, #0" br
-      "umull      r11, lr, r1, r6" br
-      "adds       r11, r12" br
+      "adds       r5, r7" br
+      "adc        r6, lr, #0" br
+      "umull      r7, lr, r1, r11" br
+      "adds       r7, r12" br
       "adc        lr, #0" br
-      "adds       r10, r11" br
+      "adds       r6, r7" br
       "adc        r12, lr, #0" br
-      "str        r8, [r0], #4" br
+      "str        r4, [r0], #4" br
 
       "ldr        r1, [r2, #12]" br
-      "mov        r8, #0" br
-      "umlal      r7, r8, r1, r3" br
-      "umull      r11, lr, r1, r4" br
-      "adds       r11, r9" br
+      "movs       r4, #0" br
+      "umlal      r3, r4, r1, r8" br
+      "umull      r7, lr, r1, r9" br
+      "adds       r7, r5" br
       "adc        lr, #0" br
-      "adds       r8, r11" br
-      "adc        r9, lr, #0" br
-      "umull      r11, lr, r1, r5" br
-      "adds       r11, r10" br
+      "adds       r4, r7" br
+      "adc        r5, lr, #0" br
+      "umull      r7, lr, r1, r10" br
+      "adds       r7, r6" br
       "adc        lr, #0" br
-      "adds       r9, r11" br
-      "adc        r10, lr, #0" br
-      "umull      r11, lr, r1, r6" br
-      "adds       r11, r12" br
+      "adds       r5, r7" br
+      "adc        r6, lr, #0" br
+      "umull      r7, lr, r1, r11" br
+      "adds       r7, r12" br
       "adc        lr, #0" br
-      "adds       r10, r11" br
+      "adds       r6, r7" br
       "adc        r12, lr, #0" br
-      "stm        r0!, {r7-r10, r12}" br
+      "stm        r0, {r3-r6, r12}" br
       "pop        {r4-r11, pc}" br
       : : : "r0","r1","r2","r3","r12","lr","cc","memory"
 #endif

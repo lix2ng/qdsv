@@ -1,9 +1,11 @@
 # qDSA
 
 
-This is qDSA, the quotient Digital Signature Algorithm by Joost Renes. I have modified the original Cortex-M0 code to better support Cortex-M4. Now with Cortex-M3 being added to the list, practically all Cortex-M cores can run at optimized speed -- Well, almost there; support for Thumb-2 without UMAAL instruction, namely M3 and M33+nodsp, still has room for improvement.
+This is qDSA, the quotient Digital Signature Algorithm, specifically the Genus-2 variant by Joost Renes. I have modified the original Cortex-M0 code to better support Cortex-M4. Now with Cortex-M3 being added to the list, practically all Cortex-M cores can run at optimized speed.
 
 It's intended for use in a bootloader for Secure Firmware Update or Secure Boot. Since verifier was my main focus, I named the package "qdsv". The signing and DH routines are still available in the source.
+
+A few words about performance data: they are collected on uVision instruction set simulator, which has some limitations. The cycle numbers are by no means accurate. However if your MCU has code cache (most fast ones have), Flash wait cycles can be ignored if you're counting milli-seconds. M0 and M3 should be pretty close, but M4 and M7 have pipelined long MAC instructions and M7 is dual-issue, you may expect 100-300Kc extra savings.
 
 You'll need arm-none-eabi-gcc to compile. Details are all in the code comments.
 
