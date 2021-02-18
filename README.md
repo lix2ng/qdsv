@@ -1,7 +1,7 @@
 # qDSA
 
 
-This is qDSA, the quotient Digital Signature Algorithm, specifically the Genus-2 variant by Joost Renes. I have modified the original Cortex-M0 code to better support Cortex-M4. Now with Cortex-M3 being added to the list, practically all Cortex-M cores can run at optimized speed.
+This is qDSA, the quotient Digital Signature Algorithm, specifically the Genus-2 variant by Joost Renes. I have modified the original Cortex-M0 code to better support Cortex-M4. Now with Cortex-M3 being added to the list, practically all Cortex-M cores can run at optimized speeds.
 
 It's intended for use in a bootloader for Secure Firmware Update or Secure Boot. Since verifier was my main focus, I named the package "qdsv". The signing and DH routines are still available in the source.
 
@@ -10,6 +10,8 @@ A few words about performance data: they are collected on uVision instruction se
 You'll need arm-none-eabi-gcc to compile. Details are all in the code comments.
 
 This code is in Public Domain without any warranty; please read the LICENSE. Bug fixes, performance reports and improvements are all welcome.
+
+NOTE 1f2i: Most stones have been turned. This marks the end of the 2021 CNY holiday session.
 
 ## The interface
 
