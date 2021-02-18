@@ -12,9 +12,7 @@ help:
 
 all: libs test
 
-libs: libqdsv_m0.a libqdsv_m4.a
-
-m3: libqdsv_m3.a
+libs: libqdsv_m0.a libqdsv_m3.a libqdsv_m4.a
 
 libqdsv_m0.a: qdsv_m0.o supp_m0.o
 	$(AR) $@ $^

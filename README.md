@@ -5,7 +5,7 @@ This is qDSA, the quotient Digital Signature Algorithm, specifically the Genus-2
 
 It's intended for use in a bootloader for Secure Firmware Update or Secure Boot. Since verifier was my main focus, I named the package "qdsv". The signing and DH routines are still available in the source.
 
-A few words about performance data: they are collected on uVision instruction set simulator, which has some limitations. The cycle numbers are by no means accurate. However if your MCU has code cache (most fast ones have), Flash wait cycles can be ignored if you're counting milli-seconds. M0 and M3 should be pretty close, but M4 and M7 have pipelined long MAC instructions and M7 is dual-issue, you may expect 100-300Kc extra savings.
+A few words about performance data: they are collected on uVision instruction set simulator, which has some limitations. The cycle numbers are by no means accurate. However if your MCU has code cache (most fast ones do), Flash wait cycles can be ignored if you're counting milli-seconds. M0 and M3 should be pretty close, but M4 and M7 have pipelined long MAC instructions and M7 is dual-issue, you may expect 100-300Kc extra savings.
 
 You'll need arm-none-eabi-gcc to compile. Details are all in the code comments.
 
@@ -43,10 +43,10 @@ This code is in Public Domain without any warranty; please read the LICENSE. Bug
      *  - message size is fixed to 32 bytes.
      *  - signature, public key and message are required to be word-aligned.
      *
-     * Current verifier performance [1f2h]:
-     *    M0: 5088Kc (106ms on 48MHz M0), 6030B Flash, 752B stack.
-     *    M3: 3649Kc (57ms on 64MHz M3),  5128B Flash, 732B stack.
-     *    M4: 2929Kc (46ms on 64MHz M4),  5016B Flash, 724B stack.
+     * Current verifier performance [1f2i]:
+     *    M0: 5080Kc (106ms on 48MHz M0), 6012B Flash, 752B stack.
+     *    M3: 3633Kc (57ms on 64MHz M3),  5126B Flash, 732B stack.
+     *    M4: 2912Kc (46ms on 64MHz M4),  5014B Flash, 724B stack.
      *
      * Ref: arm-none-eabi-gcc 7.3.1 20180622 (release). Numbers are obtained on
      * uVision simulator -- which doesn't consider slow Flash wait cycles nor

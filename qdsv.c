@@ -17,10 +17,10 @@
  *  - message size is fixed to 32 bytes.
  *  - signature, public key and message are required to be word-aligned.
  *
- * Current verifier performance [1f2h]:
- *    M0: 5088Kc (106ms on 48MHz M0), 6030B Flash, 752B stack.
- *    M3: 3649Kc (57ms on 64MHz M3),  5128B Flash, 732B stack.
- *    M4: 2929Kc (46ms on 64MHz M4),  5016B Flash, 724B stack.
+ * Current verifier performance [1f2i]:
+ *    M0: 5080Kc (106ms on 48MHz M0), 6012B Flash, 752B stack.
+ *    M3: 3633Kc (57ms on 64MHz M3),  5126B Flash, 732B stack.
+ *    M4: 2912Kc (46ms on 64MHz M4),  5014B Flash, 724B stack.
  *
  * Ref: arm-none-eabi-gcc 7.3.1 20180622 (release). Numbers are obtained on
  * uVision simulator -- which doesn't consider slow Flash wait cycles nor
@@ -48,7 +48,7 @@ typedef union {
    uint32_t v[4];
 } _align4 fe1271;
 
-/* Assembly routines for Cortex-M0 and M4.*/
+/* Assembly routines for Cortex-M series. */
 static void bigint_sqr(uint32_t *r, const uint32_t *x);
 #ifdef __thumb2__
 // Thumb-2 MUL is a label inside SQR assembler.
