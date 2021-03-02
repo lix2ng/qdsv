@@ -11,7 +11,7 @@ You'll need arm-none-eabi-gcc to compile. Details are all in the code comments.
 
 This code is in Public Domain without any warranty; please read the LICENSE. Bug fixes, performance reports and improvements are all welcome.
 
-NOTE 1f2i: Most stones have been turned. This marks the end of the 2021 CNY holiday session.
+1F2I: Most stones have been turned. This marks the end of the 2021 CNY holiday session.
 
 ## The interface
 
@@ -45,10 +45,10 @@ NOTE 1f2i: Most stones have been turned. This marks the end of the 2021 CNY holi
      *  - message size is fixed to 32 bytes.
      *  - signature, public key and message are required to be word-aligned.
      *
-     * Current verifier performance [1f2i]:
-     *    M0: 5080Kc (106ms on 48MHz M0), 6012B Flash, 752B stack.
-     *    M3: 3633Kc (57ms on 64MHz M3),  5126B Flash, 732B stack.
-     *    M4: 2912Kc (46ms on 64MHz M4),  5014B Flash, 724B stack.
+     * Current verifier performance [1f32]:
+     *    M0: 5008Kc (104ms on 48MHz M0), 5944B Flash, 752B stack.
+     *    M3: 3607Kc (56ms on 64MHz M3),  5104B Flash, 732B stack.
+     *    M4: 2876Kc (45ms on 64MHz M4),  4988B Flash, 724B stack.
      *
      * Ref: arm-none-eabi-gcc 7.3.1 20180622 (release). Numbers are obtained on
      * uVision simulator -- which doesn't consider slow Flash wait cycles nor

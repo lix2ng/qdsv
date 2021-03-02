@@ -19,14 +19,12 @@ void _naked fe1271_add(fe1271 *r, const fe1271 *x, const fe1271 *y)
       "ldm        r2!, {r1, r7}" br
       "adcs       r5, r1" br
       "adcs       r6, r7" br
-      "bics       r2, r2" br
-      "adcs       r2, r2" br // take carry
-      "lsls       r2, #1" br
-      "lsrs       r7, r6, #31" br // top bit
+      "movs       r2, #0" br
+      "adcs       r2, r2" br
       "lsls       r6, #1" br
+      "adcs       r2, r2" br
       "lsrs       r6, #1" br
-      "orrs       r2, r7" br
-      "bics       r7, r7" br
+      "movs       r7, #0" br
       "adds       r3, r2" br
       "adcs       r4, r7" br
       "adcs       r5, r7" br
@@ -41,24 +39,23 @@ void _naked fe1271_add(fe1271 *r, const fe1271 *x, const fe1271 *y)
 #else
 void fe1271_add(fe1271 *r, const fe1271 *x, const fe1271 *y)
 {
-   uint8_t c = 0;
-   uint16_t t0, t1, t2;
-   // add
-   for (int i = 0; i < 16; i++) {
-      t0 = (uint16_t)(x->b[i]);
-      t1 = (uint16_t)(y->b[i]);
+   uint32_t c = 0;
+   uint64_t t0, t1, t2;
+
+   for (int i = 0; i < 4; i++) {
+      t0 = (uint64_t)(x->v[i]);
+      t1 = (uint64_t)(y->v[i]);
       t2 = t0 + t1;
       t2 += c;
-      c = (t2 >> 8) & 1;
-      r->b[i] = (uint8_t)t2;
+      c = (t2 >> 32) & 1;
+      r->v[i] = (uint32_t)t2;
    }
-   // reduce
-   c = 2 * c;
-   for (int i = 0; i < 16; i++) {
-      t0 = (uint16_t)r->b[i];
+   c *= 2;
+   for (int i = 0; i < 4; i++) {
+      t0 = (uint64_t)r->v[i];
       t0 += c;
-      c = (t0 >> 8) & 1;
-      r->b[i] = (uint8_t)t0;
+      c = (t0 >> 32) & 1;
+      r->v[i] = (uint32_t)t0;
    }
 }
 #endif
@@ -80,21 +77,16 @@ void _naked fe1271_sub(fe1271 *r, const fe1271 *x, const fe1271 *y)
       "ldm        r2!, {r1, r7}" br
       "sbcs       r5, r1" br
       "sbcs       r6, r7" br
-      // "bics       r2, r2" br
-// This takes negative carry, no need to clear r2 beforehand.
-      "sbcs       r2, r2" br // take carry
+      "sbcs       r2, r2" br
       "rsbs       r2, #0" br
       "lsls       r2, #1" br
-      "bics       r7, r7" br
+      "movs       r7, #0" br
       "subs       r3, r2" br
       "sbcs       r4, r7" br
       "sbcs       r5, r7" br
       "sbcs       r6, r7" br
-      "sbcs       r7, r7" br // take carry
-      // "rsbs       r7, #0" br
+      "sbcs       r7, r7" br
       "lsls       r7, #1" br
-      // "subs       r3, r7" br
-// When carry is irrelevant it's safe to replace NEG-SUB with ADD.
       "adds       r3, r7" br
       "stm        r0!, {r3-r6}" br
       "pop        {r4-r7, pc}" br
@@ -105,25 +97,24 @@ void _naked fe1271_sub(fe1271 *r, const fe1271 *x, const fe1271 *y)
 #else
 void fe1271_sub(fe1271 *r, const fe1271 *x, const fe1271 *y)
 {
-   uint8_t c = 0;
-   uint16_t t0, t1;
+   uint32_t c = 0;
+   uint64_t t0, t1;
 
-   // sub
-   for (int i = 0; i < 16; i++) {
-      t0 = (uint16_t)(x->b[i]);  // add carry
-      t1 = (uint16_t)(y->b[i]);
+   for (int i = 0; i < 4; i++) {
+      t0 = (uint64_t)(x->v[i]);
+      t1 = (uint64_t)(y->v[i]);
       t1 += c;
       t0 -= t1;
-      c = (t0 >> 8) & 1;
-      r->b[i] = (uint8_t)t0;
+      c = (t0 >> 32) & 1;
+      r->v[i] = (uint32_t)t0;
    }
    // reduce
-   c = 2 * c;
-   for (int i = 0; i < 16; i++) {
-      t0 = (uint16_t)(r->b[i]);
+   c *= 2;
+   for (int i = 0; i < 4; i++) {
+      t0 = (uint64_t)(r->v[i]);
       t0 -= c;
-      c = (t0 >> 8) & 1;
-      r->b[i] = (uint8_t)t0;
+      c = (t0 >> 32) & 1;
+      r->v[i] = (uint32_t)t0;
    }
 }
 #endif
@@ -159,17 +150,17 @@ void _naked fe1271_neg(fe1271 *x)
       "push       {r4-r7}" br
       "ldm        r0!, {r3-r6}" br
       "rsbs       r1, r3, #0" br
-      "bics       r2, r2" br
+      "movs       r2, #0" br
       "sbcs       r2, r4" br
-      "bics       r3, r3" br
+      "movs       r3, #0" br
       "sbcs       r3, r5" br
-      "bics       r7, r7" br
+      "movs       r7, #0" br
       "sbcs       r7, r6" br
       "sbcs       r4, r4" br
       "rsbs       r4, #0" br
       "lsls       r4, #1" br
       "subs       r1, r4" br
-      "bics       r4, r4" br
+      "movs       r4, #0" br
       "sbcs       r2, r4" br
       "sbcs       r3, r4" br
       "sbcs       r7, r4" br
@@ -187,9 +178,8 @@ void fe1271_neg(fe1271 *x)
 {
    fe1271 zero;
 
-   for (int i = 0; i < 4; i++) {
+   for (int i = 0; i < 4; i++)
       zero.v[i] = 0;
-   }
    fe1271_sub(x, &zero, x);
 }
 #endif
@@ -209,18 +199,17 @@ void _naked fe1271_freeze(fe1271 *x)
 #else
       "ldm        r0!, {r2-r5}" br
 #endif
-      "lsrs       r1, r5, #31" br // top bit
+      "lsrs       r1, r5, #31" br
       "lsls       r5, #1" br
       "lsrs       r5, #1" br
       "adds       r2, r1" br
-      "bics       r1, r1" br
+      "movs       r1, #0" br
       "adcs       r3, r1" br
       "adcs       r4, r1" br
       "adcs       r5, r1" br
-      "lsrs       r1, r5, #31" br // top bit
       "lsls       r5, #1" br
+      "adcs       r2, r1" br
       "lsrs       r5, #1" br
-      "adds       r2, r1" br
 #ifndef __thumb2__
       "subs       r0, #16" br
 #endif
@@ -233,19 +222,18 @@ void _naked fe1271_freeze(fe1271 *x)
 #else
 void fe1271_freeze(fe1271 *x)
 {
-   uint16_t c, t;
+   uint64_t c, t;
 
-   c = (x->b[15] >> 7);  // take top bit of x
-   x->b[15] &= 0x7f;     // set top bit to 0 (stored in c)
-
-   for (int i = 0; i < 15; i++) {
-      t = (uint16_t)(x->b[i]) + c;
-      c = (t >> 8) & 1;
-      x->b[i] = (uint8_t)t;
+   c = (x->v[3] >> 31);    // take top bit of x
+   x->v[3] &= 0x7fffffff;  // set top bit to 0 (stored in c)
+   for (int i = 0; i < 4; i++) {
+      t = (uint64_t)(x->v[i]) + c;
+      c = (t >> 32) & 1;
+      x->v[i] = (uint32_t)t;
    }
-   x->b[15] += (uint8_t)c;
-   x->b[0] += (x->b[15] >> 7);
-   x->b[15] &= 0x7f;
+   x->v[3] += (uint32_t)c;
+   x->v[0] += (x->v[3] >> 31);
+   x->v[3] &= 0x7fffffff;
 }
 #endif
 
@@ -261,62 +249,60 @@ void _alfn _naked fe1271_mulconst(fe1271 *r, const fe1271 *x, uint16_t y)
       ".syntax unified" br
 #ifdef __thumb2__
       // M4 pipline -3c uV miscount -6c
-      "push       {r4-r9}" br
-      "ldm        r1, {r7-r9, r12}" br
+      "push       {r4-r8, lr}" br
+      "ldm        r1, {r7, r8, r12, lr}" br
       "umull      r1, r3, r2, r7" br
       "movs       r4, #0" br
       "umlal      r3, r4, r2, r8" br
       "movs       r5, #0" br
-      "umlal      r4, r5, r2, r9" br
+      "umlal      r4, r5, r2, r12" br
       "movs       r6, #0" br
-      "umlal      r5, r6, r2, r12" br // 127bx16b=143b
-
-      "lsls       r6, #1" br
-      "orr        r6, r6, r5, lsr #31" br
-      "bic        r5, #0x80000000" br // 16b in r6, 127b in product
-
+      "umlal      r5, r6, r2, lr" br
+      "lsls       r5, #1" br
+      "adcs       r6, r6" br
+      "lsrs       r5, #1" br
       "adds       r1, r6" br
       "adcs       r3, #0" br
       "adcs       r4, #0" br
       "adcs       r5, #0" br
       "stm        r0!, {r1, r3-r5}" br
-      "pop        {r4-r9}" br
-      "bx         lr" br
-      : : : "r0","r1","r3","r12","cc","memory" // r2 remains
+      "pop        {r4-r8, pc}" br
+      : : : "r0","r1","r3","r12","lr","cc","memory" // r2 remains
+
 #else
       "push       {r4-r7}" br
       "ldrh       r3, [r1]" br
-      "muls       r3, r2" br        // M0: X[0]*Y
+      "muls       r3, r2" br
       "ldrh       r4, [r1, #2]" br
-      "muls       r4, r2" br        // M1: X[1]*Y
+      "muls       r4, r2" br
       "lsls       r6, r4, #16" br
       "lsrs       r7, r4, #16" br
       "adds       r3, r6" br
       "ldrh       r4, [r1, #4]" br
-      "muls       r4, r2" br        // M2: X[2]*Y
+      "muls       r4, r2" br
       "adcs       r4, r7" br
       "ldrh       r5, [r1, #6]" br
-      "muls       r5, r2" br        // M3: X[3]*Y
+      "muls       r5, r2" br
       "lsls       r6, r5, #16" br
       "lsrs       r7, r5, #16" br
       "adds       r4, r6" br
       "ldrh       r5, [r1, #8]" br
-      "muls       r5, r2" br		   // M4: X[4]*Y
+      "muls       r5, r2" br
       "adcs       r5, r7" br
       "ldrh       r6, [r1, #10]" br
-      "muls       r6, r2" br		   // M5: X[5]*Y
+      "muls       r6, r2" br
       "lsrs       r7, r6, #16" br
       "lsls       r6, #16" br
       "adds       r5, r6" br
       "ldrh       r6, [r1, #12]" br
-      "muls       r6, r2" br        // M6: X[6]*Y
+      "muls       r6, r2" br
       "adcs       r6, r7" br
       "ldrh       r7, [r1, #14]" br
-      "muls       r7, r2" br        // M7: X[7]*Y
+      "muls       r7, r2" br
       "lsls       r1, r7, #16" br
       "lsrs       r7, #16" br
       "adds       r6, r1" br
-      "bics       r2, r2" br
+      "movs       r2, #0" br
       "adcs       r7, r2" br
       "lsls       r7, #1" br
       "lsls       r6, #1" br
@@ -340,11 +326,8 @@ void fe1271_mulconst(fe1271 *r, const fe1271 *x, uint16_t y)
 {
    fe1271 temp;
 
-   temp.b[0] = (uint8_t)y;
-   temp.b[1] = (uint8_t)(y >> 8);
-   for (int i = 2; i < 16; i++) {
-      temp.b[i] = 0;
-   }
+   temp.v[0] = y;
+   temp.v[1] = temp.v[2] = temp.v[3] = 0;
    uint32_t t[8];
    bigint_mul(t, x->v, temp.v);
    bigint_red(r->v, t);
@@ -368,10 +351,9 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       "adcs       r3, r9" br
       "adcs       r4, r12" br
       "adcs       r5, lr" br
-      "bics       r6, r6" br
-      "adcs       r6, r6" br
-      "lsls       r6, #1" br
-      "orr        r6, r6, r5, lsr #31" br
+      "movs       r6, #0" br
+      "adc        r6, r6, r5, lsr #31" br
+      "adc        r6, #0" br
       "bic        r5, #0x80000000" br
       "adds       r2, r6" br
       "adcs       r3, #0" br
@@ -399,10 +381,9 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       "adcs       r3, r7" br
       "adcs       r4, r8" br
       "adcs       r5, r9" br
-      "bics       r6, r6" br
-      "adcs       r6, r6" br
-      "lsls       r6, #1" br
-      "orr        r6, r6, r5, lsr #31" br
+      "movs       r6, #0" br
+      "adc        r6, r6, r5, lsr #31" br
+      "adc        r6, #0" br
       "bic        r5, #0x80000000" br
       "adds       r2, r6" br
       "adcs       r3, #0" br
@@ -457,10 +438,9 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       "ldm        r0!, {r6, r7}" br
       "adcs       r4, r6" br
       "adcs       r5, r7" br
-      "bics       r6, r6" br
-      "adcs       r6, r6" br
-      "lsls       r6, #1" br
-      "orr        r6, r6, r5, lsr #31" br
+      "movs       r6, #0" br
+      "adc        r6, r6, r5, lsr #31" br
+      "adc        r6, #0" br
       "bic        r5, #0x80000000" br
       "adds       r2, r6" br
       "adcs       r3, #0" br
@@ -475,10 +455,9 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       "adcs       r3, r9" br
       "adcs       r4, r12" br
       "adcs       r5, lr" br
-      "bics       r6, r6" br
-      "adcs       r6, r6" br
-      "lsls       r6, #1" br
-      "orr        r6, r6, r5, lsr #31" br
+      "movs       r6, #0" br
+      "adc        r6, r6, r5, lsr #31" br
+      "adc        r6, #0" br
       "bic        r5, #0x80000000" br
       "adds       r2, r6" br
       "adcs       r3, #0" br
@@ -505,33 +484,23 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       : : : "r0","r1","r2","r3","r12","lr","cc","memory"
 
 #else
-      "push       {r4-r7, lr}" br
-      "mov        r2, r8" br
-      "mov        r3, r9" br
-      "push       {r2, r3}" br
+      "push       {r4-r7}" br
       "ldm        r1!, {r2-r5}" br
-      "mov        r8, r2" br
-      "mov        r9, r3" br
-      "mov        r12, r4" br
-      "mov        lr, r5" br
-
+      "push       {r2-r5}" br
       "ldm        r1!, {r2-r5}" br
-      "mov        r6, r8" br
-      "mov        r7, r9" br
+      "pop        {r6, r7}" br
       "adds       r2, r6" br
       "adcs       r3, r7" br
-      "mov        r6, r12" br
-      "mov        r7, lr" br
+      "pop        {r6, r7}" br
       "adcs       r4, r6" br
       "adcs       r5, r7" br
-      "bics       r6, r6" br
+      "sub        sp, #16" br
+      "movs       r6, #0" br
       "adcs       r6, r6" br
-      "lsls       r6, #1" br
-      "lsrs       r7, r5, #31" br
       "lsls       r5, #1" br
+      "adcs       r6, r6" br
       "lsrs       r5, #1" br
-      "eors       r6, r7" br
-      "bics       r7, r7" br
+      "movs       r7, #0" br
       "adds       r2, r6" br
       "adcs       r3, r7" br
       "adcs       r4, r7" br
@@ -540,18 +509,16 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
 
       "subs       r1, #16" br // restore pointer
       "ldm        r1!, {r2-r5}" br
-      "mov        r6, r8" br
-      "mov        r7, r9" br
+      "pop        {r6, r7}" br
       "subs       r2, r6" br
       "sbcs       r3, r7" br
-      "mov        r6, r12" br
-      "mov        r7, lr" br
+      "pop        {r6, r7}" br
       "sbcs       r4, r6" br
       "sbcs       r5, r7" br
       "sbcs       r6, r6" br
       "rsbs       r6, #0" br
       "lsls       r6, #1" br
-      "bics       r7, r7" br
+      "movs       r7, #0" br
       "subs       r2, r6" br
       "sbcs       r3, r7" br
       "sbcs       r4, r7" br
@@ -567,22 +534,17 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       "ldm        r1!, {r6, r7}" br // a[3] upper two words
       "adcs       r4, r6" br
       "adcs       r5, r7" br
-      "bics       r6, r6" br
+      "movs       r6, #0" br
       "adcs       r6, r6" br
-      "lsls       r6, #1" br
-      "lsrs       r7, r5, #31" br
       "lsls       r5, #1" br
+      "adcs       r6, r6" br
       "lsrs       r5, #1" br
-      "eors       r6, r7" br
-      "bics       r7, r7" br
+      "movs       r7, #0" br
       "adds       r2, r6" br
       "adcs       r3, r7" br
       "adcs       r4, r7" br
       "adcs       r5, r7" br
-      "mov        r8, r2" br // store for later
-      "mov        r9, r3" br
-      "mov        r12, r4" br
-      "mov        lr, r5" br
+      "push       {r2-r5}" br // store for later
 
       "subs       r1, #32" br // restore pointer
       "ldm        r1!, {r2-r7}" br // a[2] & a[3] lower 2 in r6, r7
@@ -594,7 +556,7 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       "sbcs       r6, r6" br
       "rsbs       r6, #0" br
       "lsls       r6, #1" br
-      "bics       r7, r7" br
+      "movs       r7, #0" br
       "subs       r2, r6" br
       "sbcs       r3, r7" br
       "sbcs       r4, r7" br
@@ -620,7 +582,7 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       "sbcs       r6, r6" br
       "rsbs       r6, #0" br
       "lsls       r6, #1" br
-      "bics       r7, r7" br
+      "movs       r7, #0" br
       "subs       r2, r6" br
       "sbcs       r3, r7" br
       "sbcs       r4, r7" br
@@ -639,14 +601,12 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       "ldm        r0!, {r6, r7}" br
       "adcs       r4, r6" br
       "adcs       r5, r7" br
-      "bics       r6, r6" br
+      "movs       r6, #0" br
       "adcs       r6, r6" br
-      "lsls       r6, #1" br
-      "lsrs       r7, r5, #31" br
       "lsls       r5, #1" br
+      "adcs       r6, r6" br
       "lsrs       r5, #1" br
-      "eors       r6, r7" br
-      "bics       r7, r7" br
+      "movs       r7, #0" br
       "adds       r2, r6" br
       "adcs       r3, r7" br
       "adcs       r4, r7" br
@@ -656,22 +616,19 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
 
       "subs       r0, #48" br // pointer to r[1]
       "ldm        r0!, {r2-r5}" br
-      "mov        r6, r8" br
-      "mov        r7, r9" br
+      "pop        {r6, r7}" br
       "adds       r2, r6" br
       "adcs       r3, r7" br
-      "mov        r6, r12" br
-      "mov        r7, lr" br
+      "pop        {r6, r7}" br
       "adcs       r4, r6" br
       "adcs       r5, r7" br
-      "bics       r6, r6" br
+      "sub        sp, #16" br
+      "movs       r6, #0" br
       "adcs       r6, r6" br
-      "lsls       r6, #1" br
-      "lsrs       r7, r5, #31" br
       "lsls       r5, #1" br
+      "adcs       r6, r6" br
       "lsrs       r5, #1" br
-      "eors       r6, r7" br
-      "bics       r7, r7" br
+      "movs       r7, #0" br
       "adds       r2, r6" br
       "adcs       r3, r7" br
       "adcs       r4, r7" br
@@ -680,18 +637,16 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       "stm        r0!, {r2-r5}" br
 
       "ldm        r0!, {r2-r5}" br
-      "mov        r6, r8" br
-      "mov        r7, r9" br
+      "pop        {r6, r7}" br
       "subs       r2, r6" br
       "sbcs       r3, r7" br
-      "mov        r6, r12" br
-      "mov        r7, lr" br
+      "pop        {r6, r7}" br
       "sbcs       r4, r6" br
       "sbcs       r5, r7" br
       "sbcs       r6, r6" br
       "rsbs       r6, #0" br
       "lsls       r6, #1" br
-      "bics       r7, r7" br
+      "movs       r7, #0" br
       "subs       r2, r6" br
       "sbcs       r3, r7" br
       "sbcs       r4, r7" br
@@ -701,11 +656,9 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
       "adds       r3, r7" br
       "subs       r0, #16" br
       "stm        r0!, {r2-r5}" br
-      "pop        {r2, r3}" br
-      "mov        r8, r2" br
-      "mov        r9, r3" br
-      "pop        {r4-r7, pc}" br
-      : : : "r0","r1","r2","r3","r12","lr","cc","memory"
+      "pop        {r4-r7}" br
+      "bx         lr" br
+      : : : "r0","r1","r2","r3","cc","memory"
 #endif
    );
    // clang-format on
@@ -737,37 +690,30 @@ void _alfn _naked bigint_red(uint32_t *r, const uint32_t *a)
    asm(
       ".syntax unified" br
 #ifdef __thumb2__
-      // Just 8c less than the Thumb-1 version, but over 10K runs it saves 81Kc
-      // in signature verification.
-      "push       {r4-r8}" br
-      "ldm        r1, {r2-r8, r12}" br
-
+      "push       {r4-r7, lr}" br
+      "ldm        r1, {r2-r7, r12, lr}" br
       "movs       r1, #0" br
       "adds       r6, r6" br
       "adcs       r7, r7" br
-      "adcs       r8, r8" br
       "adcs       r12, r12" br
+      "adcs       lr, lr" br
       "adcs       r1, r1" br
-
-      "adds       r5, r12" br
+      "adds       r5, lr" br
       "adcs       r1, #0" br
-      "lsls       r1, #1" br
-      "orr        r1, r1, r5, lsr #31" br
-      "bic        r5, #0x80000000" br
-
+      "lsls       r5, #1" br
+      "adcs       r1, r1" br
+      "lsrs       r5, #1" br
       "adds       r2, r6" br
       "adcs       r3, r7" br
-      "adcs       r4, r8" br
+      "adcs       r4, r12" br
       "adcs       r5, #0" br
-
       "adds       r2, r1" br
       "adcs       r3, #0" br
       "adcs       r4, #0" br
       "adcs       r5, #0" br
       "stm        r0!, {r2-r5}" br
-      "pop        {r4-r8}" br
-      "bx         lr" br
-      : : : "r0","r1","r2","r3","r12","cc","memory"
+      "pop        {r4-r7, pc}" br
+      : : : "r0","r1","r2","r3","r12","lr","cc","memory"
 
 #else
       "push       {r4-r7, lr}" br
@@ -786,9 +732,8 @@ void _alfn _naked bigint_red(uint32_t *r, const uint32_t *a)
       "adds       r7, r5" br
       "movs       r5, #0" br
       "adcs       r1, r5" br        // store carry in R1
-      "lsls       r1, #1" br        // multiply by 2
       "lsls       r7, #1" br
-      "adcs       r1, r5" br        // top bit into R1
+      "adcs       r1, r1" br        // carry*2 + top bit
       "lsrs       r7, #1" br        // and clear top-bit of low-half
 // Now start from bottom again
       "mov        r5, r12" br
@@ -799,11 +744,10 @@ void _alfn _naked bigint_red(uint32_t *r, const uint32_t *a)
       "movs       r3, #0" br
       "adcs       r7, r3" br
 // Finally do carry bits
-      "adds       r5, r1" br
+      "adds       r1, r5" br
       "adcs       r2, r3" br
       "adcs       r6, r3" br
       "adcs       r7, r3" br        // cannot overflow
-      "mov        r1, r5" br
       "stm        r0!, {r1, r2, r6, r7}" br
       "pop        {r4-r7, pc}" br
       : : : "r0","r1","r2","r3","r12","lr","cc","memory"
@@ -814,27 +758,25 @@ void _alfn _naked bigint_red(uint32_t *r, const uint32_t *a)
 #else
 void bigint_red(uint32_t *r, const uint32_t *a)
 {
-   uint16_t res[16];
-   uint8_t *rb = (uint8_t *)r;
-   const uint8_t *x = (const uint8_t *)a;
+   uint64_t res[4];
 
-   for (int i = 0; i < 16; i++) {
-      res[i] = (uint16_t)x[i];
-      res[i] += 2 * x[i + 16];
+   for (int i = 0; i < 4; i++) {
+      res[i] = (uint64_t)a[i];
+      res[i] += 2 * (uint64_t)a[i + 4];
    }
-   // reduce the whole thing to radix 2^8
+   // reduce the whole thing to radix 2^32
    // might need two iterations
-   for (int i = 0; i < 15; i++) {
-      res[i + 1] += (res[i] >> 8);
-      res[i] &= 0xff;
+   for (int i = 0; i < 3; i++) {
+      res[i + 1] += (res[i] >> 32);
+      res[i] &= 0xffffffff;
    }
-   res[0] += 2 * (res[15] >> 8);  // take top bits
-   res[15] &= 0xff;               // set top bits to 0
-   for (int i = 0; i < 15; i++) {
-      res[i + 1] += (res[i] >> 8);
-      rb[i] = (uint8_t)res[i];
+   res[0] += 2 * (res[3] >> 32);  // take top bits
+   res[3] &= 0xffffffff;          // set top bits to 0
+   for (int i = 0; i < 3; i++) {
+      res[i + 1] += (res[i] >> 32);
+      r[i] = (uint32_t)res[i];
    }
-   rb[15] = (uint8_t)res[15];
+   r[3] = (uint32_t)res[3];
 }
 #endif
 
@@ -856,7 +798,7 @@ void _alfn _naked bigint_sqr(uint32_t *r, const uint32_t *x)
    "bigint_mul:" br
 #ifdef __ARM_FEATURE_DSP
       /*
-       * Thumb-2 with DSP Extension (UMAAL). uV:110c; real ~101c.
+       * Thumb-2 with DSP Extension (UMAAL). uV:109c; real ~100c.
        *
        * The following is based on FourQ's code with further improvements:
        *  - save & restore 7 instead of 9 registers (-4c)
@@ -865,48 +807,48 @@ void _alfn _naked bigint_sqr(uint32_t *r, const uint32_t *x)
        *  - change register allocation to produce more T-1 encodings; saved
        *    bytes despite STM breakdown (-10B)
        */
-      "push       {r4-r10}" br
-      "ldm        r1, {r8-r10, r12}" br
+      "push       {r4-r9, lr}" br
+      "ldm        r1, {r8-r9, r12, lr}" br
       "ldr        r1, [r2]" br
       "umull      r4, r3, r1, r8" br
       "movs       r5, #0" br
       "umlal      r3, r5, r1, r9" br
       "movs       r6, #0" br
-      "umlal      r5, r6, r1, r10" br
+      "umlal      r5, r6, r1, r12" br
       "str        r4, [r0]" br
       "movs       r7, #0" br
-      "umlal      r6, r7, r1, r12" br
+      "umlal      r6, r7, r1, lr" br
 
       "ldr        r1, [r2, #4]" br
       "movs       r4, #0" br
       "umlal      r3, r4, r1, r8" br
       "umaal      r4, r5, r1, r9" br
       "str        r3, [r0, #4]" br
-      "umaal      r5, r6, r1, r10" br
-      "umaal      r6, r7, r1, r12" br
+      "umaal      r5, r6, r1, r12" br
+      "umaal      r6, r7, r1, lr" br
 
       "ldr        r1, [r2, #8]" br
       "movs       r3, #0" br
       "umlal      r4, r3, r1, r8" br
       "umaal      r3, r5, r1, r9" br
       "str        r4, [r0, #8]" br
-      "umaal      r5, r6, r1, r10" br
-      "umaal      r6, r7, r1, r12" br
+      "umaal      r5, r6, r1, r12" br
+      "umaal      r6, r7, r1, lr" br
+
       "ldr        r1, [r2, #12]" br
       "movs       r4, #0" br
-
       "umlal      r3, r4, r1, r8" br
       "str        r3, [r0, #12]" br
       "umaal      r4, r5, r1, r9" br
       "str        r4, [r0, #16]" br
-      "umaal      r5, r6, r1, r10" br
+      "umaal      r5, r6, r1, r12" br
       "str        r5, [r0, #20]" br
-      "umaal      r6, r7, r1, r12" br
+      "umaal      r6, r7, r1, lr" br
       "str        r6, [r0, #24]" br
       "str        r7, [r0, #28]" br
-      "pop        {r4-r10}" br
-      "bx         lr" br
-      : : : "r1","r2","r3","r12","cc","memory" // r0 remains
+      "pop        {r4-r9, pc}" br
+      : : : "r1","r2","r3","r12","lr","cc","memory" // r0 remains
+
 #else
       /*
        * Thumb-2 without UMAAL. uV:181c
@@ -993,6 +935,9 @@ void _alfn _naked bigint_sqr(uint32_t *r, const uint32_t *x)
 }
 
 #elif defined(__thumb__)
+/*
+ * 385c.
+ */
 void _naked bigint_mul(uint32_t *r, const uint32_t *x, const uint32_t *y)
 {
    // clang-format off
@@ -1004,11 +949,9 @@ void _naked bigint_mul(uint32_t *r, const uint32_t *x, const uint32_t *y)
       "mov        r5, r10" br
       "push       {r3-r5}" br
       "mov        lr, r0" br
-      "mov        r10, r2" br
       "mov        r12, r1" br
-      "mov        r0, r2" br
-      "ldm        r0!, {r4, r5}" br
-      "adds       r0, #8" br
+      "mov        r10, r2" br
+      "ldm        r2!, {r4, r5}" br
       "ldm        r1!, {r2, r3, r6, r7}" br
       // MUL128
       // MUL64
@@ -1025,6 +968,7 @@ void _naked bigint_mul(uint32_t *r, const uint32_t *x, const uint32_t *y)
       "eors       r7, r0" br
       "mov        r9, r1" br
       "mov        r8, r5" br
+// r4xr2->r1:r0 t:r5
       "lsrs       r1, r4, #16" br
       "uxth       r4, r4" br
       "mov        r0, r4" br
@@ -1042,6 +986,7 @@ void _naked bigint_mul(uint32_t *r, const uint32_t *x, const uint32_t *y)
       "lsrs       r4, r5, #16" br
       "adds       r0, r2" br
       "adcs       r1, r4" br
+// r6xr3->r3:r2 t:r4,r5
       "lsrs       r4, r6, #16" br
       "uxth       r6, r6" br
       "uxth       r5, r3" br
@@ -1059,12 +1004,14 @@ void _naked bigint_mul(uint32_t *r, const uint32_t *x, const uint32_t *y)
       "lsrs       r5, r6, #16" br
       "adds       r2, r4" br
       "adcs       r3, r5" br
+
       "eors       r6, r6" br
       "adds       r2, r1" br
       "adcs       r3, r6" br
       "mov        r1, r9" br
       "mov        r5, r8" br
       "mov        r8, r0" br
+// r1xr5->r0:r1 t:r4,r6
       "lsrs       r0, r1, #16" br
       "uxth       r1, r1" br
       "mov        r4, r1" br
@@ -1082,6 +1029,7 @@ void _naked bigint_mul(uint32_t *r, const uint32_t *x, const uint32_t *y)
       "lsrs       r5, #16" br
       "adds       r1, r6" br
       "adcs       r0, r5" br
+
       "eors       r1, r7" br
       "eors       r0, r7" br
       "eors       r4, r4" br
@@ -1138,6 +1086,7 @@ void _naked bigint_mul(uint32_t *r, const uint32_t *x, const uint32_t *y)
       "eors       r7, r0" br
       "mov        r9, r1" br
       "mov        r8, r5" br
+// r4xr2->r1:r0 t:r5
       "lsrs       r1, r4, #16" br
       "uxth       r4, r4" br
       "mov        r0, r4" br
@@ -1155,6 +1104,7 @@ void _naked bigint_mul(uint32_t *r, const uint32_t *x, const uint32_t *y)
       "lsrs       r4, r5, #16" br
       "adds       r0, r2" br
       "adcs       r1, r4" br
+// r6xr3->r3:r2 t:r4,r5
       "lsrs       r4, r6, #16" br
       "uxth       r6, r6" br
       "uxth       r5, r3" br
@@ -1172,12 +1122,14 @@ void _naked bigint_mul(uint32_t *r, const uint32_t *x, const uint32_t *y)
       "lsrs       r5, r6, #16" br
       "adds       r2, r4" br
       "adcs       r3, r5" br
+
       "eors       r6, r6" br
       "adds       r2, r1" br
       "adcs       r3, r6" br
       "mov        r1, r9" br
       "mov        r5, r8" br
       "mov        r8, r0" br
+// r1xr5->r0:r1 t:r0,r6
       "lsrs       r0, r1, #16" br
       "uxth       r1, r1" br
       "mov        r4, r1" br
@@ -1195,6 +1147,7 @@ void _naked bigint_mul(uint32_t *r, const uint32_t *x, const uint32_t *y)
       "lsrs       r5, #16" br
       "adds       r1, r6" br
       "adcs       r0, r5" br
+
       "eors       r1, r7" br
       "eors       r0, r7" br
       "eors       r4, r4" br
@@ -1230,6 +1183,7 @@ void _naked bigint_mul(uint32_t *r, const uint32_t *x, const uint32_t *y)
       "eors       r7, r0" br
       "mov        r9, r1" br
       "mov        r8, r5" br
+// r4xr2->r1:r0 t:r1,r5
       "lsrs       r1, r4, #16" br
       "uxth       r4, r4" br
       "mov        r0, r4" br
@@ -1247,6 +1201,7 @@ void _naked bigint_mul(uint32_t *r, const uint32_t *x, const uint32_t *y)
       "lsrs       r4, r5, #16" br
       "adds       r0, r2" br
       "adcs       r1, r4" br
+// r6xr3->r3:r2 t:r4,r5
       "lsrs       r4, r6, #16" br
       "uxth       r6, r6" br
       "uxth       r5, r3" br
@@ -1264,12 +1219,14 @@ void _naked bigint_mul(uint32_t *r, const uint32_t *x, const uint32_t *y)
       "lsrs       r5, r6, #16" br
       "adds       r2, r4" br
       "adcs       r3, r5" br
+
       "eors       r6, r6" br
       "adds       r2, r1" br
       "adcs       r3, r6" br
       "mov        r1, r9" br
       "mov        r5, r8" br
       "mov        r8, r0" br
+// r1xr5->r0:r1 t:r4,r6
       "lsrs       r0, r1, #16" br
       "uxth       r1, r1" br
       "mov        r4, r1" br
@@ -1287,6 +1244,7 @@ void _naked bigint_mul(uint32_t *r, const uint32_t *x, const uint32_t *y)
       "lsrs       r5, #16" br
       "adds       r1, r6" br
       "adcs       r0, r5" br
+
       "eors       r1, r7" br
       "eors       r0, r7" br
       "eors       r4, r4" br
@@ -1337,39 +1295,35 @@ void _naked bigint_mul(uint32_t *r, const uint32_t *x, const uint32_t *y)
    // clang-format on
 }
 #else
-void bigint_mul(uint32_t *rr, const uint32_t *xx, const uint32_t *yy)
+void bigint_mul(uint32_t *r, const uint32_t *x, const uint32_t *y)
 {
-   uint8_t *r = (uint8_t *)rr;
-   const uint8_t *x = (const uint8_t *)xx;
-   const uint8_t *y = (const uint8_t *)yy;
    int i, j;
-   uint16_t t0, t1, mul;
-   uint16_t res[32];
+   uint64_t t0, t1, mul;
+   uint64_t res[8];
 
-   for (i = 0; i < 32; i++) {
+   for (i = 0; i < 8; i++)
       res[i] = 0;
-   }
-   for (i = 0; i < 16; i++) {
-      for (j = 0; j < 16; j++) {
-         t0 = (uint16_t)(x[i]);
-         t1 = (uint16_t)(y[j]);
+   for (i = 0; i < 4; i++) {
+      for (j = 0; j < 4; j++) {
+         t0 = (uint64_t)(x[i]);
+         t1 = (uint64_t)(y[j]);
          mul = t0 * t1;
-         res[i + j] += mul & 0xff;  // add low part of mult to result
-         res[i + j + 1] +=
-            (mul >> 8) & 0xff;  // add high part of mult to result
+         res[i + j] += mul & 0xffffffff;  // add low part of mult to result
+         res[i + j + 1] += mul >> 32;     // add high part of mult to result
       }
    }
-   // reduce the whole result to radix 2^8
-   for (i = 0; i < 31; i++) {
-      res[i + 1] += res[i] >> 8;
-      r[i] = (uint16_t)res[i];
+   // reduce the whole result to radix 2^32
+   for (i = 0; i < 7; i++) {
+      res[i + 1] += res[i] >> 32;
+      r[i] = (uint32_t)res[i];
    }
-   r[31] = (uint16_t)res[31];
+   r[7] = (uint32_t)res[7];
 }
 #endif
 
 /* -----------------------------------------------------------------------------
  * This squarer is dedicated to Thumb-1. Thumb-2 uses multiply.
+ * 240c
  */
 #if !defined(__thumb2__)
 #ifdef __thumb__
@@ -1388,8 +1342,7 @@ void _naked bigint_sqr(uint32_t *r, const uint32_t *x)
       "mov        r4, r9" br
       "mov        r5, r10" br
       "mov        r6, r11" br
-      "mov        r7, r12" br
-      "push       {r3-r7}" br
+      "push       {r3-r6}" br
       "mov        lr, r0" br
       "ldm        r1!, {r4-r7}" br
       // sqr 128 Refined Karatsuba.
@@ -1585,7 +1538,7 @@ void _naked bigint_sqr(uint32_t *r, const uint32_t *x)
       "muls       r4, r4" br
       "lsrs       r7, r2, #15" br
       "lsls       r2, #17" br
-      "adds       r3,r2" br
+      "adds       r3, r2" br
       "adcs       r4, r7" br
       // End: sqr 32, result in r3, r4
       "mov        r7, r0" br
@@ -1629,12 +1582,11 @@ void _naked bigint_sqr(uint32_t *r, const uint32_t *x)
       "stm        r7!, {r0-r6}" br
       "mov        r6, r8" br
       "stm        r7!, {r6}" br
-      "pop        {r3-r7}" br
+      "pop        {r3-r6}" br
       "mov        r8, r3" br
       "mov        r9, r4" br
       "mov        r10, r5" br
       "mov        r11, r6" br
-      "mov        r12, r7" br
       "pop        {r4-r7, pc}" br
       : : : "r0","r1","r2","r3","r12","lr","cc","memory"
    );

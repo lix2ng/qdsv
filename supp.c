@@ -35,21 +35,22 @@
  * K-f[800] in Thumb-2 assembler.
  * 712B, 27+338/r. 10r = 3407c or 50 c/b.
  */
-#if defined(__thumb2__)
+#ifdef __thumb2__
 void _align4 _naked kf800_permute(uint32_t *A, uint nr)
 {
    // clang-format off
    asm(
       "push       {r4-r11, lr}" br
-      "rsb        lr, r1, #" STR(KF800_MAXR) br // 11c.
-
+      "rsb        r1, #" STR(KF800_MAXR) br
+      "adr        r2, .L_rcs" br
+      "add        lr, r2, r1, lsl #2" br
    ".L_round:" br
-      "cmp        lr, #" STR(KF800_MAXR) br
-      "bhs        .L_done" br                   // 2c (4c for exit).
+      "adr        r1, .L_rc_end" br
+      "cmp        lr, r1" br
+      "bhs        .L_done" br
 
-// Theta, part 1. C[5] in r1-r5. 6+43+1=50c.
-      "ldm        r0!, {r1-r5}" br
-      "ldm        r0!, {r6-r12}" br
+// Theta, part 1. C[5] in r1-r5.
+      "ldm        r0!, {r1-r12}" br
       "eors       r1, r6" br
       "eors       r2, r7" br
       "eor        r3, r8" br
@@ -74,134 +75,137 @@ void _align4 _naked kf800_permute(uint32_t *A, uint nr)
       "eor        r3, r9" br
       "eor        r4, r10" br
       "eor        r5, r11" br
+      "subs       r0, #100" br
 
-      "subs       r0, #100" br         // restore A
-
-// Theta, part 2. D[5] in r8-r12. 5c
+// Theta, part 2. D[5] in r8-r12.
       "eor        r8, r5, r2, ror #31" br    // D0 = C4 ^ (C1 <<< 1)
       "eor        r9, r1, r3, ror #31" br    // D1 = C0 ^ (C2 <<< 1)
       "eor        r10, r2, r4, ror #31" br   // D2 = C1 ^ (C3 <<< 1)
       "eor        r11, r3, r5, ror #31" br   // D3 = C2 ^ (C4 <<< 1)
       "eor        r12, r4, r1, ror #31" br   // D4 = C3 ^ (C0 <<< 1)
 
-// Theta, part 3. A[] in r1-r7 (7,7,7,4 batches). 23x3+14+1=84c.
-      "ldm        r0, {r1-r7}" br
-      "eor        r1, r8" br
-      "eor        r2, r9" br
-      "eor        r3, r10" br
-      "eor        r4, r11" br
-      "eor        r5, r12" br
-      "eor        r6, r8" br
-      "eor        r7, r9" br
-      "stm        r0!, {r1-r7}" br
+#define rD0 "r8"
+#define rD1 "r9"
+#define rD2 "r10"
+#define rD3 "r11"
+#define rD4 "r12"
 
-      "ldm        r0, {r1-r7}" br
-      "eor        r1, r10" br
-      "eor        r2, r11" br
-      "eor        r3, r12" br
-      "eor        r4, r8" br
-      "eor        r5, r9" br
-      "eor        r6, r10" br
-      "eor        r7, r11" br
-      "stm        r0!, {r1-r7}" br
+// Theta part 3 and Rho and Pi all together.
+      "ldr        r7, [r0]" br
+      "eor        r7, " rD0 br
+      "str        r7, [r0]" br
+      /*
+       * M3 & M4 TRM: neighboring LDR & STR single can pipeline their address
+       * and data phase for 1c execution; but unaligned wide ops may disrupt it.
+       * Also: STR Rx,[Ry,#imm] is always one cycle.
+       */
+      "ldr        r1, [r0, #4* 1]" br
+      "ldr        r2, [r0, #4* 10]" br
+      "ldr        r3, [r0, #4* 7]" br
+      "ldr        r4, [r0, #4* 11]" br
+      "ldr        r5, [r0, #4* 17]" br
+      "ldr        r6, [r0, #4* 18]" br
+      "eor        r1, " rD1 br
+      "eor        r2, " rD0 br
+      "eor        r3, " rD2 br
+      "eor        r4, " rD1 br
+      "eor        r5, " rD2 br
+      "eor        r6, " rD3 br
+      "ror        r1, #31" br
+      "ror        r2, #29" br
+      "ror        r3, #26" br
+      "ror        r4, #22" br
+      "ror        r5, #17" br
+      "ror        r7, r6, #11" br
+      "str        r1, [r0, #4* 10]" br
+      "str        r2, [r0, #4* 7]" br
+      "str        r3, [r0, #4* 11]" br
+      "str        r4, [r0, #4* 17]" br
+      "str        r5, [r0, #4* 18]" br
 
-      "ldm        r0, {r1-r7}" br
-      "eor        r1, r12" br
-      "eor        r2, r8" br
-      "eor        r3, r9" br
-      "eor        r4, r10" br
-      "eor        r5, r11" br
-      "eor        r6, r12" br
-      "eor        r7, r8" br
-      "stm        r0!, {r1-r7}" br
+      "ldr        r1, [r0, #4* 3]" br
+      "ldr        r2, [r0, #4* 5]" br
+      "ldr        r3, [r0, #4* 16]" br
+      "ldr        r4, [r0, #4* 8]" br
+      "ldr        r5, [r0, #4* 21]" br
+      "ldr        r6, [r0, #4* 24]" br
+      "str        r7, [r0, #4* 3]" br
+      "eor        r1, " rD3 br
+      "eor        r2, " rD0 br
+      "eor        r3, " rD1 br
+      "eor        r4, " rD3 br
+      "eor        r5, " rD1 br
+      "eor        r6, " rD4 br
+      "ror        r1, #4" br
+      "ror        r2, #28" br
+      "ror        r3, #19" br
+      "ror        r4, #9" br
+      "ror        r5, #30" br
+      "ror        r7, r6, #18" br
+      "str        r1, [r0, #4* 5]" br
+      "str        r2, [r0, #4* 16]" br
+      "str        r3, [r0, #4* 8]" br
+      "str        r4, [r0, #4* 21]" br
+      "str        r5, [r0, #4* 24]" br
 
-      "ldm        r0, {r1-r4}" br
-      "eor        r1, r9" br
-      "eor        r2, r10" br
-      "eor        r3, r11" br
-      "eor        r4, r12" br
-      "stm        r0!, {r1-r4}" br
+      "ldr        r1, [r0, #4* 4]" br
+      "ldr        r2, [r0, #4* 15]" br
+      "ldr        r3, [r0, #4* 23]" br
+      "ldr        r4, [r0, #4* 19]" br
+      "ldr        r5, [r0, #4* 13]" br
+      "ldr        r6, [r0, #4* 12]" br
+      "str        r7, [r0, #4* 4]" br
+      "eor        r1, " rD4 br
+      "eor        r2, " rD0 br
+      "eor        r3, " rD3 br
+      "eor        r4, " rD4 br
+      "eor        r5, " rD3 br
+      "eor        r6, " rD2 br
+      "ror        r1, #5" br
+      "ror        r2, #23" br
+      "ror        r3, #8" br
+      "ror        r4, #24" br
+      "ror        r5, #7" br
+      "ror        r7, r6, #21" br
+      "str        r1, [r0, #4* 15]" br
+      "str        r2, [r0, #4* 23]" br
+      "str        r3, [r0, #4* 19]" br
+      "str        r4, [r0, #4* 13]" br
+      "str        r5, [r0, #4* 12]" br
 
-      "subs       r0, #100" br
+      "ldr        r1, [r0, #4* 2]" br
+      "ldr        r2, [r0, #4* 20]" br
+      "ldr        r3, [r0, #4* 14]" br
+      "ldr        r4, [r0, #4* 22]" br
+      "ldr        r5, [r0, #4* 9]" br
+      "ldr        r6, [r0, #4* 6]" br
+      "str        r7, [r0, #4* 2]" br
+      "eor        r1, " rD2 br
+      "eor        r2, " rD0 br
+      "eor        r3, " rD4 br
+      "eor        r4, " rD2 br
+      "eor        r5, " rD4 br
+      "eor        r6, " rD1 br
+      "ror        r1, #2" br
+      "ror        r2, #14" br
+      "ror        r3, #25" br
+      "ror        r4, #3" br
+      "ror        r5, #12" br
+      "ror        r6, #20" br
+      "str        r1, [r0, #4* 20]" br
+      "str        r2, [r0, #4* 14]" br
+      "str        r3, [r0, #4* 22]" br
+      "str        r4, [r0, #4* 9]" br
+      "str        r5, [r0, #4* 6]" br
+      "str        r6, [r0, #4* 1]" br
 
-// Rho & Pi. 6 elements per batch, using r1-r6, r7-r12. 18+19+19+20=76c.
-      "ldr        r1, [r0, #1*4]" br
-      "ldr        r2, [r0, #10*4]" br
-      "ldr        r3, [r0, #7*4]" br
-      "ldr        r4, [r0, #11*4]" br
-      "ldr        r5, [r0, #17*4]" br
-      "ldr        r6, [r0, #18*4]" br
-      "ror        r7, r1, #31" br
-      "ror        r8, r2, #29" br
-      "ror        r9, r3, #26" br
-      "ror        r10, r4, #22" br
-      "ror        r11, r5, #17" br
-      "ror        r12, r6, #11" br
-      "str        r7, [r0, #10*4]" br
-      "str        r8, [r0, #7*4]" br
-      "str        r9, [r0, #11*4]" br
-      "str        r10, [r0, #17*4]" br
-      "str        r11, [r0, #18*4]" br
+#undef rD0
+#undef rD1
+#undef rD2
+#undef rD3
+#undef rD4
 
-      "ldr        r1, [r0, #3*4]" br
-      "ldr        r2, [r0, #5*4]" br
-      "ldr        r3, [r0, #16*4]" br
-      "ldr        r4, [r0, #8*4]" br
-      "ldr        r5, [r0, #21*4]" br
-      "ldr        r6, [r0, #24*4]" br
-      "str        r12, [r0, #3*4]" br
-      "ror        r7, r1, #4" br
-      "ror        r8, r2, #28" br
-      "ror        r9, r3, #19" br
-      "ror        r10, r4, #9" br
-      "ror        r11, r5, #30" br
-      "ror        r12, r6, #18" br
-      "str        r7, [r0, #5*4]" br
-      "str        r8, [r0, #16*4]" br
-      "str        r9, [r0, #8*4]" br
-      "str        r10, [r0, #21*4]" br
-      "str        r11, [r0, #24*4]" br
-
-      "ldr        r1, [r0, #4*4]" br
-      "ldr        r2, [r0, #15*4]" br
-      "ldr        r3, [r0, #23*4]" br
-      "ldr        r4, [r0, #19*4]" br
-      "ldr        r5, [r0, #13*4]" br
-      "ldr        r6, [r0, #12*4]" br
-      "str        r12, [r0, #4*4]" br
-      "ror        r7, r1, #5" br
-      "ror        r8, r2, #23" br
-      "ror        r9, r3, #8" br
-      "ror        r10, r4, #24" br
-      "ror        r11, r5, #7" br
-      "ror        r12, r6, #21" br
-      "str        r7, [r0, #15*4]" br
-      "str        r8, [r0, #23*4]" br
-      "str        r9, [r0, #19*4]" br
-      "str        r10, [r0, #13*4]" br
-      "str        r11, [r0, #12*4]" br
-
-      "ldr        r1, [r0, #2*4]" br
-      "ldr        r2, [r0, #20*4]" br
-      "ldr        r3, [r0, #14*4]" br
-      "ldr        r4, [r0, #22*4]" br
-      "ldr        r5, [r0, #9*4]" br
-      "ldr        r6, [r0, #6*4]" br
-      "str        r12, [r0, #2*4]" br
-      "ror        r7, r1, #2" br
-      "ror        r8, r2, #14" br
-      "ror        r9, r3, #25" br
-      "ror        r10, r4, #3" br
-      "ror        r11, r5, #12" br
-      "ror        r12, r6, #20" br
-      "str        r7, [r0, #20*4]" br
-      "str        r8, [r0, #14*4]" br
-      "str        r9, [r0, #22*4]" br
-      "str        r10, [r0, #9*4]" br
-      "str        r11, [r0, #6*4]" br
-      "str        r12, [r0, #1*4]" br
-
-// Chi. Load A[] in r6-r10; result in r1-r5. 22x5+1=111c.
+// Chi. Load A[] in r6-r10; result in r1-r5.
       "ldm        r0, {r6-r10}" br
       "bic        r1, r8, r7" br
       "eors       r1, r6" br
@@ -268,16 +272,14 @@ void _align4 _naked kf800_permute(uint32_t *A, uint nr)
       "stm        r0!, {r1-r5}" br
       "subs       r0, #100" br
 
-// Iota. 10c
-      "adr        r2, .L_rcs" br
+// Iota.
       "ldr        r1, [r0, #0]" br
-      "ldr        r2, [r2, lr, lsl #2]" br
+      "ldr        r2, [lr], #4" br
       "eors       r1, r2" br
       "str        r1, [r0, #0]" br
-      "add        lr, #1" br
       "b          .L_round" br
 
-// Total 338c per round.
+// Total 282c per round.
    ".L_done:" br
       "pop        {r4-r11, pc}" br
 
@@ -290,13 +292,13 @@ void _align4 _naked kf800_permute(uint32_t *A, uint nr)
 #endif
       ".word 0x8000808b, 0x0000008b, 0x00008089, 0x00008003, 0x00008002" br
       ".word 0x00000080, 0x0000800a, 0x8000000a, 0x80008081, 0x00008080" br
+   ".L_rc_end:" br
       : : :"r1","r2","r3","r12","lr","cc","memory"
    );
    // clang-format on
 }
 
 #else
-
 /* -----------------------------------------------------------------------------
  * C version.
  * M0 unrolled: 700B, 24+509/r, ~75.2 c/b.
@@ -611,50 +613,53 @@ void _alfn _naked wam_swap(void *a, void *b, uint len)
       ".syntax    unified" br
 #ifdef __thumb2__
       "push       {r4-r8, lr}" br
+#else
+      "push       {r4-r6}" br
+#endif
       "lsrs       r2, #2" br
       "b          2f" br
    "1:" br
+#ifdef __thumb2__
       "ldm        r0, {r3-r6}" br
       "ldm        r1, {r7, r8, r12, lr}" br
       "stm        r0!, {r7, r8, r12, lr}" br
       "stm        r1!, {r3-r6}" br
-   "2:" br
-      "subs       r2, #4" br
-      "bpl.w      1b" br
-      "adds       r2, #4" br
-      "beq        10f" br
-      // 1-3 words, loop.
-   "3:" br
-      "ldr        r3, [r0]" br
-      "ldr        r4, [r1]" br
-      "str        r4, [r0], #4" br
-      "str        r3, [r1], #4" br
-      "subs       r2, #1" br
-      "bne        3b" br
-   "10:" br
-      "pop        {r4-r8, pc}" br
-      : : :"r0","r1","r2","r3","r12","lr","cc","memory"
 #else
-      "push       {r4-r6}" br
-      "lsrs       r2, #2" br
-      "b          2f" br
-   "1:" br
       "ldm        r0!, {r3, r4}" br
       "ldm        r1!, {r5, r6}" br
       "subs       r0, #8" br
       "subs       r1, #8" br
       "stm        r0!, {r5, r6}" br
       "stm        r1!, {r3, r4}" br
+      "ldm        r0!, {r3, r4}" br
+      "ldm        r1!, {r5, r6}" br
+      "subs       r0, #8" br
+      "subs       r1, #8" br
+      "stm        r0!, {r5, r6}" br
+      "stm        r1!, {r3, r4}" br
+#endif
    "2:" br
-      "subs       r2, #2" br
+      "subs       r2, #4" br
+#ifdef __thumb2__
+      "bpl.w      1b" br
+#else
       "bpl        1b" br
-      "adds       r2, #2" br
+#endif
+      "adds       r2, #4" br
       "beq        10f" br
+      // 1-3 words, loop.
+   "3:" br
       "ldr        r3, [r0]" br
-      "ldr        r5, [r1]" br
-      "str        r5, [r0]" br
-      "str        r3, [r1]" br
+      "ldr        r4, [r1]" br
+      "stm        r0!, {r4}" br
+      "stm        r1!, {r3}" br
+      "subs       r2, #1" br
+      "bne        3b" br
    "10:" br
+#ifdef __thumb2__
+      "pop        {r4-r8, pc}" br
+      : : :"r0","r1","r2","r3","r12","lr","cc","memory"
+#else
       "pop        {r4-r6}" br
       "bx         lr" br
       : : :"r0","r1","r2","r3","cc","memory"
