@@ -18,7 +18,7 @@ typedef unsigned uint;
 #include <stdlib.h>
 #include <stdio.h>
 /* For end of line in inline assemblers. */
-#define br "\n\t"
+#define __ "\n\t"
 
 #define _naked __attribute__((naked))
 #define _align4 __attribute__((aligned(4)))

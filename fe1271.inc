@@ -10,27 +10,27 @@ void _naked fe1271_add(fe1271 *r, const fe1271 *x, const fe1271 *y)
 {
    // clang-format off
    asm(
-      ".syntax unified" br
-      "push       {r4-r7, lr}" br
-      "ldm        r1!, {r3-r6}" br
-      "ldm        r2!, {r1, r7}" br
-      "adds       r3, r1" br
-      "adcs       r4, r7" br
-      "ldm        r2!, {r1, r7}" br
-      "adcs       r5, r1" br
-      "adcs       r6, r7" br
-      "movs       r2, #0" br
-      "adcs       r2, r2" br
-      "lsls       r6, #1" br
-      "adcs       r2, r2" br
-      "lsrs       r6, #1" br
-      "movs       r7, #0" br
-      "adds       r3, r2" br
-      "adcs       r4, r7" br
-      "adcs       r5, r7" br
-      "adcs       r6, r7" br
-      "stm        r0!, {r3-r6}" br
-      "pop        {r4-r7, pc}" br
+      ".syntax unified" __
+      "push       {r4-r7, lr}" __
+      "ldm        r1!, {r3-r6}" __
+      "ldm        r2!, {r1, r7}" __
+      "adds       r3, r1" __
+      "adcs       r4, r7" __
+      "ldm        r2!, {r1, r7}" __
+      "adcs       r5, r1" __
+      "adcs       r6, r7" __
+      "movs       r2, #0" __
+      "adcs       r2, r2" __
+      "lsls       r6, #1" __
+      "adcs       r2, r2" __
+      "lsrs       r6, #1" __
+      "movs       r7, #0" __
+      "adds       r3, r2" __
+      "adcs       r4, r7" __
+      "adcs       r5, r7" __
+      "adcs       r6, r7" __
+      "stm        r0!, {r3-r6}" __
+      "pop        {r4-r7, pc}" __
       : : : "r0","r1","r2","r3","cc","memory"
    );
    // clang-format on
@@ -68,28 +68,28 @@ void _naked fe1271_sub(fe1271 *r, const fe1271 *x, const fe1271 *y)
 {
    // clang-format off
    asm(
-      ".syntax unified" br
-      "push       {r4-r7, lr}" br
-      "ldm        r1!, {r3-r6}" br
-      "ldm        r2!, {r1, r7}" br
-      "subs       r3, r1" br
-      "sbcs       r4, r7" br
-      "ldm        r2!, {r1, r7}" br
-      "sbcs       r5, r1" br
-      "sbcs       r6, r7" br
-      "sbcs       r2, r2" br
-      "rsbs       r2, #0" br
-      "lsls       r2, #1" br
-      "movs       r7, #0" br
-      "subs       r3, r2" br
-      "sbcs       r4, r7" br
-      "sbcs       r5, r7" br
-      "sbcs       r6, r7" br
-      "sbcs       r7, r7" br
-      "lsls       r7, #1" br
-      "adds       r3, r7" br
-      "stm        r0!, {r3-r6}" br
-      "pop        {r4-r7, pc}" br
+      ".syntax unified" __
+      "push       {r4-r7, lr}" __
+      "ldm        r1!, {r3-r6}" __
+      "ldm        r2!, {r1, r7}" __
+      "subs       r3, r1" __
+      "sbcs       r4, r7" __
+      "ldm        r2!, {r1, r7}" __
+      "sbcs       r5, r1" __
+      "sbcs       r6, r7" __
+      "sbcs       r2, r2" __
+      "rsbs       r2, #0" __
+      "lsls       r2, #1" __
+      "movs       r7, #0" __
+      "subs       r3, r2" __
+      "sbcs       r4, r7" __
+      "sbcs       r5, r7" __
+      "sbcs       r6, r7" __
+      "sbcs       r7, r7" __
+      "lsls       r7, #1" __
+      "adds       r3, r7" __
+      "stm        r0!, {r3-r6}" __
+      "pop        {r4-r7, pc}" __
       : : : "r0","r1","r2","r3","cc","memory"
    );
    // clang-format on
@@ -127,47 +127,47 @@ void _naked fe1271_neg(fe1271 *x)
 {
    // clang-format off
    asm(
-      ".syntax unified" br
+      ".syntax unified" __
 #ifdef __thumb2__
-      "push       {r4-r7}" br
-      "movs       r7, #0" br
-      "ldm        r0, {r3-r6}" br
-      "rsbs       r1, r3, #0" br
-      "sbcs       r2, r7, r4" br
-      "sbcs       r3, r7, r5" br
-      "sbcs       r7, r7, r6" br
-      "sbcs       r4, r4" br
-      "rsbs       r4, #0" br
-      "subs       r1, r1, r4, lsl #1" br
-      "sbcs       r2, #0" br
-      "sbcs       r3, #0" br
-      "sbc        r7, #0" br
-      "stm        r0!, {r1-r3, r7}" br
-      "pop        {r4-r7}" br
-      "bx         lr" br
+      "push       {r4-r7}" __
+      "movs       r7, #0" __
+      "ldm        r0, {r3-r6}" __
+      "rsbs       r1, r3, #0" __
+      "sbcs       r2, r7, r4" __
+      "sbcs       r3, r7, r5" __
+      "sbcs       r7, r7, r6" __
+      "sbcs       r4, r4" __
+      "rsbs       r4, #0" __
+      "subs       r1, r1, r4, lsl #1" __
+      "sbcs       r2, #0" __
+      "sbcs       r3, #0" __
+      "sbc        r7, #0" __
+      "stm        r0!, {r1-r3, r7}" __
+      "pop        {r4-r7}" __
+      "bx         lr" __
       : : : "r0","r1","r2","r3","cc","memory"
 #else
-      "push       {r4-r7}" br
-      "ldm        r0!, {r3-r6}" br
-      "rsbs       r1, r3, #0" br
-      "movs       r2, #0" br
-      "sbcs       r2, r4" br
-      "movs       r3, #0" br
-      "sbcs       r3, r5" br
-      "movs       r7, #0" br
-      "sbcs       r7, r6" br
-      "sbcs       r4, r4" br
-      "rsbs       r4, #0" br
-      "lsls       r4, #1" br
-      "subs       r1, r4" br
-      "movs       r4, #0" br
-      "sbcs       r2, r4" br
-      "sbcs       r3, r4" br
-      "sbcs       r7, r4" br
-      "subs       r0, #16" br
-      "stm        r0!, {r1, r2, r3, r7}" br
-      "pop        {r4-r7}" br
-      "bx         lr" br
+      "push       {r4-r7}" __
+      "ldm        r0!, {r3-r6}" __
+      "rsbs       r1, r3, #0" __
+      "movs       r2, #0" __
+      "sbcs       r2, r4" __
+      "movs       r3, #0" __
+      "sbcs       r3, r5" __
+      "movs       r7, #0" __
+      "sbcs       r7, r6" __
+      "sbcs       r4, r4" __
+      "rsbs       r4, #0" __
+      "lsls       r4, #1" __
+      "subs       r1, r4" __
+      "movs       r4, #0" __
+      "sbcs       r2, r4" __
+      "sbcs       r3, r4" __
+      "sbcs       r7, r4" __
+      "subs       r0, #16" __
+      "stm        r0!, {r1, r2, r3, r7}" __
+      "pop        {r4-r7}" __
+      "bx         lr" __
       : : : "r0","r1","r2","r3","cc","memory"
 #endif
    );
@@ -192,29 +192,29 @@ void _naked fe1271_freeze(fe1271 *x)
 {
    // clang-format off
    asm(
-      ".syntax unified" br
-      "push       {r4, r5, lr}" br
+      ".syntax unified" __
+      "push       {r4, r5, lr}" __
 #ifdef __thumb2__
-      "ldm        r0, {r2-r5}" br
+      "ldm        r0, {r2-r5}" __
 #else
-      "ldm        r0!, {r2-r5}" br
+      "ldm        r0!, {r2-r5}" __
 #endif
-      "lsrs       r1, r5, #31" br
-      "lsls       r5, #1" br
-      "lsrs       r5, #1" br
-      "adds       r2, r1" br
-      "movs       r1, #0" br
-      "adcs       r3, r1" br
-      "adcs       r4, r1" br
-      "adcs       r5, r1" br
-      "lsls       r5, #1" br
-      "adcs       r2, r1" br
-      "lsrs       r5, #1" br
+      "lsrs       r1, r5, #31" __
+      "lsls       r5, #1" __
+      "lsrs       r5, #1" __
+      "adds       r2, r1" __
+      "movs       r1, #0" __
+      "adcs       r3, r1" __
+      "adcs       r4, r1" __
+      "adcs       r5, r1" __
+      "lsls       r5, #1" __
+      "adcs       r2, r1" __
+      "lsrs       r5, #1" __
 #ifndef __thumb2__
-      "subs       r0, #16" br
+      "subs       r0, #16" __
 #endif
-      "stm        r0!, {r2-r5}" br
-      "pop        {r4, r5, pc}" br
+      "stm        r0!, {r2-r5}" __
+      "pop        {r4, r5, pc}" __
       : : : "r0","r1","r2","r3","cc","memory"
    );
    // clang-format on
@@ -246,75 +246,75 @@ void _alfn _naked fe1271_mulconst(fe1271 *r, const fe1271 *x, uint16_t y)
 {
    // clang-format off
    asm(
-      ".syntax unified" br
+      ".syntax unified" __
 #ifdef __thumb2__
       // M4 pipline -3c uV miscount -6c
-      "push       {r4-r8, lr}" br
-      "ldm        r1, {r7, r8, r12, lr}" br
-      "umull      r1, r3, r2, r7" br
-      "movs       r4, #0" br
-      "umlal      r3, r4, r2, r8" br
-      "movs       r5, #0" br
-      "umlal      r4, r5, r2, r12" br
-      "movs       r6, #0" br
-      "umlal      r5, r6, r2, lr" br
-      "lsls       r5, #1" br
-      "adcs       r6, r6" br
-      "lsrs       r5, #1" br
-      "adds       r1, r6" br
-      "adcs       r3, #0" br
-      "adcs       r4, #0" br
-      "adcs       r5, #0" br
-      "stm        r0!, {r1, r3-r5}" br
-      "pop        {r4-r8, pc}" br
+      "push       {r4-r8, lr}" __
+      "ldm        r1, {r7, r8, r12, lr}" __
+      "umull      r1, r3, r2, r7" __
+      "movs       r4, #0" __
+      "umlal      r3, r4, r2, r8" __
+      "movs       r5, #0" __
+      "umlal      r4, r5, r2, r12" __
+      "movs       r6, #0" __
+      "umlal      r5, r6, r2, lr" __
+      "lsls       r5, #1" __
+      "adcs       r6, r6" __
+      "lsrs       r5, #1" __
+      "adds       r1, r6" __
+      "adcs       r3, #0" __
+      "adcs       r4, #0" __
+      "adcs       r5, #0" __
+      "stm        r0!, {r1, r3-r5}" __
+      "pop        {r4-r8, pc}" __
       : : : "r0","r1","r3","r12","lr","cc","memory" // r2 remains
 
 #else
-      "push       {r4-r7}" br
-      "ldrh       r3, [r1]" br
-      "muls       r3, r2" br
-      "ldrh       r4, [r1, #2]" br
-      "muls       r4, r2" br
-      "lsls       r6, r4, #16" br
-      "lsrs       r7, r4, #16" br
-      "adds       r3, r6" br
-      "ldrh       r4, [r1, #4]" br
-      "muls       r4, r2" br
-      "adcs       r4, r7" br
-      "ldrh       r5, [r1, #6]" br
-      "muls       r5, r2" br
-      "lsls       r6, r5, #16" br
-      "lsrs       r7, r5, #16" br
-      "adds       r4, r6" br
-      "ldrh       r5, [r1, #8]" br
-      "muls       r5, r2" br
-      "adcs       r5, r7" br
-      "ldrh       r6, [r1, #10]" br
-      "muls       r6, r2" br
-      "lsrs       r7, r6, #16" br
-      "lsls       r6, #16" br
-      "adds       r5, r6" br
-      "ldrh       r6, [r1, #12]" br
-      "muls       r6, r2" br
-      "adcs       r6, r7" br
-      "ldrh       r7, [r1, #14]" br
-      "muls       r7, r2" br
-      "lsls       r1, r7, #16" br
-      "lsrs       r7, #16" br
-      "adds       r6, r1" br
-      "movs       r2, #0" br
-      "adcs       r7, r2" br
-      "lsls       r7, #1" br
-      "lsls       r6, #1" br
-      "adcs       r7, r2" br
-      "lsrs       r6, #1" br
-      "adds       r3, r7" br
-      "adcs       r4, r2" br
-      "adcs       r5, r2" br
-      "adcs       r6, r2" br
-      "stm        r0!, {r3-r6}" br
-      "pop        {r4-r7}" br
-      "bx         lr" br
+      "push       {r4-r7}" __
+      "ldrh       r3, [r1]" __
+      "muls       r3, r2" __
+      "ldrh       r4, [r1, #2]" __
+      "muls       r4, r2" __
+      "lsls       r6, r4, #16" __
+      "lsrs       r7, r4, #16" __
+      "adds       r3, r6" __
+      "ldrh       r4, [r1, #4]" __
+      "muls       r4, r2" __
+      "adcs       r4, r7" __
+      "ldrh       r5, [r1, #6]" __
+      "muls       r5, r2" __
+      "lsls       r6, r5, #16" __
+      "lsrs       r7, r5, #16" __
+      "adds       r4, r6" __
+      "ldrh       r5, [r1, #8]" __
+      "muls       r5, r2" __
+      "adcs       r5, r7" __
+      "ldrh       r6, [r1, #10]" __
+      "muls       r6, r2" __
+      "lsrs       r7, r6, #16" __
+      "lsls       r6, #16" __
+      "adds       r5, r6" __
+      "ldrh       r6, [r1, #12]" __
+      "muls       r6, r2" __
+      "adcs       r6, r7" __
+      "ldrh       r7, [r1, #14]" __
+      "muls       r7, r2" __
+      "lsls       r1, r7, #16" __
+      "lsrs       r7, #16" __
+      "adds       r6, r1" __
+      "movs       r2, #0" __
+      "adcs       r7, r2" __
+      "lsls       r7, #1" __
+      "lsls       r6, #1" __
+      "adcs       r7, r2" __
+      "lsrs       r6, #1" __
+      "adds       r3, r7" __
+      "adcs       r4, r2" __
+      "adcs       r5, r2" __
+      "adcs       r6, r2" __
+      "stm        r0!, {r3-r6}" __
+      "pop        {r4-r7}" __
+      "bx         lr" __
       : : : "r0","r1","r2","r3","cc","memory"
 #endif
    );
@@ -342,322 +342,322 @@ void _alfn _naked fe1271_hdmrd(fe1271 *r, const fe1271 *x)
 {
    // clang-format off
    asm(
-      ".syntax unified" br
+      ".syntax unified" __
 #ifdef __thumb2__
-      "push       {r4-r9, lr}" br
-      "ldm        r1!, {r8, r9, r12, lr}" br
-      "ldm        r1, {r2-r5}" br
-      "adds       r2, r8" br
-      "adcs       r3, r9" br
-      "adcs       r4, r12" br
-      "adcs       r5, lr" br
-      "movs       r6, #0" br
-      "adc        r6, r6, r5, lsr #31" br
-      "adc        r6, #0" br
-      "bic        r5, #0x80000000" br
-      "adds       r2, r6" br
-      "adcs       r3, #0" br
-      "adcs       r4, #0" br
-      "adcs       r5, #0" br
-      "stm        r0!, {r2-r5}" br // a[0]+a[1]
+      "push       {r4-r9, lr}" __
+      "ldm        r1!, {r8, r9, r12, lr}" __
+      "ldm        r1, {r2-r5}" __
+      "adds       r2, r8" __
+      "adcs       r3, r9" __
+      "adcs       r4, r12" __
+      "adcs       r5, lr" __
+      "movs       r6, #0" __
+      "adc        r6, r6, r5, lsr #31" __
+      "adc        r6, #0" __
+      "bic        r5, #0x80000000" __
+      "adds       r2, r6" __
+      "adcs       r3, #0" __
+      "adcs       r4, #0" __
+      "adcs       r5, #0" __
+      "stm        r0!, {r2-r5}" __ // a[0]+a[1]
 
-      "ldm        r1!, {r2-r5}" br
-      "subs       r2, r8" br
-      "sbcs       r3, r9" br
-      "sbcs       r4, r12" br
-      "sbcs       r5, lr" br
-      "sbcs       r6, r6" br
-      "rsbs       r6, #0" br
-      "subs       r2, r2, r6, lsl #1" br
-      "sbcs       r3, #0" br
-      "sbcs       r4, #0" br
-      "sbcs       r5, #0" br
-      "sbcs       r7, r7" br
-      "add        r3, r3, r7, lsl #1" br
-      "stm        r0!, {r2-r5}" br // a[1]-a[0]
+      "ldm        r1!, {r2-r5}" __
+      "subs       r2, r8" __
+      "sbcs       r3, r9" __
+      "sbcs       r4, r12" __
+      "sbcs       r5, lr" __
+      "sbcs       r6, r6" __
+      "rsbs       r6, #0" __
+      "subs       r2, r2, r6, lsl #1" __
+      "sbcs       r3, #0" __
+      "sbcs       r4, #0" __
+      "sbcs       r5, #0" __
+      "sbcs       r7, r7" __
+      "add        r3, r3, r7, lsl #1" __
+      "stm        r0!, {r2-r5}" __ // a[1]-a[0]
 
-      "ldm        r1!, {r2-r9}" br // a[2] & a[3] lower 2 in r6, r7
-      "adds       r2, r6" br
-      "adcs       r3, r7" br
-      "adcs       r4, r8" br
-      "adcs       r5, r9" br
-      "movs       r6, #0" br
-      "adc        r6, r6, r5, lsr #31" br
-      "adc        r6, #0" br
-      "bic        r5, #0x80000000" br
-      "adds       r2, r6" br
-      "adcs       r3, #0" br
-      "adcs       r4, #0" br
-      "adcs       r5, #0" br
-      "mov        r8, r2" br // store for later
-      "mov        r9, r3" br
-      "mov        r12, r4" br
-      "mov        lr, r5" br
+      "ldm        r1!, {r2-r9}" __ // a[2] & a[3] lower 2 in r6, r7
+      "adds       r2, r6" __
+      "adcs       r3, r7" __
+      "adcs       r4, r8" __
+      "adcs       r5, r9" __
+      "movs       r6, #0" __
+      "adc        r6, r6, r5, lsr #31" __
+      "adc        r6, #0" __
+      "bic        r5, #0x80000000" __
+      "adds       r2, r6" __
+      "adcs       r3, #0" __
+      "adcs       r4, #0" __
+      "adcs       r5, #0" __
+      "mov        r8, r2" __ // store for later
+      "mov        r9, r3" __
+      "mov        r12, r4" __
+      "mov        lr, r5" __
 
-      "subs       r1, #32" br // restore pointer
-      "ldm        r1!, {r2-r7}" br // a[2] & a[3] lower 2 in r6, r7
-      "subs       r2, r6" br
-      "sbcs       r3, r7" br
-      "ldm        r1!, {r6, r7}" br // a[3] upper two words
-      "sbcs       r4, r6" br
-      "sbcs       r5, r7" br
-      "sbcs       r6, r6" br
-      "rsbs       r6, #0" br
-      "subs       r2, r2, r6, lsl #1" br
-      "sbcs       r3, #0" br
-      "sbcs       r4, #0" br
-      "sbcs       r5, #0" br
-      "sbcs       r7, r7" br
-      "add        r3, r3, r7, lsl #1" br
-      "adds       r0, #16" br
-      "stm        r0!, {r2-r5}" br
+      "subs       r1, #32" __ // restore pointer
+      "ldm        r1!, {r2-r7}" __ // a[2] & a[3] lower 2 in r6, r7
+      "subs       r2, r6" __
+      "sbcs       r3, r7" __
+      "ldm        r1!, {r6, r7}" __ // a[3] upper two words
+      "sbcs       r4, r6" __
+      "sbcs       r5, r7" __
+      "sbcs       r6, r6" __
+      "rsbs       r6, #0" __
+      "subs       r2, r2, r6, lsl #1" __
+      "sbcs       r3, #0" __
+      "sbcs       r4, #0" __
+      "sbcs       r5, #0" __
+      "sbcs       r7, r7" __
+      "add        r3, r3, r7, lsl #1" __
+      "adds       r0, #16" __
+      "stm        r0!, {r2-r5}" __
 
-      "subs       r0, #64" br // restore pointer to c in r[0]
-      "ldm        r0!, {r6, r7}" br
-      "subs       r2, r6" br
-      "sbcs       r3, r7" br
-      "ldm        r0!, {r6, r7}" br
-      "sbcs       r4, r6" br
-      "sbcs       r5, r7" br
-      "sbcs       r6, r6" br
-      "rsbs       r6, #0" br
-      "subs       r2, r2, r6, lsl #1" br
-      "sbcs       r3, #0" br
-      "sbcs       r4, #0" br
-      "sbcs       r5, #0" br
-      "sbcs       r7, r7" br
-      "add        r3, r3, r7, lsl #1" br
-      "adds       r0, #16" br // pointer to r[2]
-      "stm        r0!, {r2-r5}" br
+      "subs       r0, #64" __ // restore pointer to c in r[0]
+      "ldm        r0!, {r6, r7}" __
+      "subs       r2, r6" __
+      "sbcs       r3, r7" __
+      "ldm        r0!, {r6, r7}" __
+      "sbcs       r4, r6" __
+      "sbcs       r5, r7" __
+      "sbcs       r6, r6" __
+      "rsbs       r6, #0" __
+      "subs       r2, r2, r6, lsl #1" __
+      "sbcs       r3, #0" __
+      "sbcs       r4, #0" __
+      "sbcs       r5, #0" __
+      "sbcs       r7, r7" __
+      "add        r3, r3, r7, lsl #1" __
+      "adds       r0, #16" __ // pointer to r[2]
+      "stm        r0!, {r2-r5}" __
 
-      "ldm        r0!, {r2-r5}" br // load d
-      "subs       r0, #64" br // restore pointer to c in r[0]
-      "ldm        r0!, {r6, r7}" br
-      "adds       r2, r6" br
-      "adcs       r3, r7" br
-      "ldm        r0!, {r6, r7}" br
-      "adcs       r4, r6" br
-      "adcs       r5, r7" br
-      "movs       r6, #0" br
-      "adc        r6, r6, r5, lsr #31" br
-      "adc        r6, #0" br
-      "bic        r5, #0x80000000" br
-      "adds       r2, r6" br
-      "adcs       r3, #0" br
-      "adcs       r4, #0" br
-      "adcs       r5, #0" br
-      "adds       r0, #32" br // pointer to r[3]
-      "stm        r0!, {r2-r5}" br
+      "ldm        r0!, {r2-r5}" __ // load d
+      "subs       r0, #64" __ // restore pointer to c in r[0]
+      "ldm        r0!, {r6, r7}" __
+      "adds       r2, r6" __
+      "adcs       r3, r7" __
+      "ldm        r0!, {r6, r7}" __
+      "adcs       r4, r6" __
+      "adcs       r5, r7" __
+      "movs       r6, #0" __
+      "adc        r6, r6, r5, lsr #31" __
+      "adc        r6, #0" __
+      "bic        r5, #0x80000000" __
+      "adds       r2, r6" __
+      "adcs       r3, #0" __
+      "adcs       r4, #0" __
+      "adcs       r5, #0" __
+      "adds       r0, #32" __ // pointer to r[3]
+      "stm        r0!, {r2-r5}" __
 
-      "subs       r0, #48" br // pointer to r[1]
-      "ldm        r0!, {r2-r5}" br
-      "adds       r2, r8" br
-      "adcs       r3, r9" br
-      "adcs       r4, r12" br
-      "adcs       r5, lr" br
-      "movs       r6, #0" br
-      "adc        r6, r6, r5, lsr #31" br
-      "adc        r6, #0" br
-      "bic        r5, #0x80000000" br
-      "adds       r2, r6" br
-      "adcs       r3, #0" br
-      "adcs       r4, #0" br
-      "adcs       r5, #0" br
-      "subs       r0, #32" br // pointer to r[0]
-      "stm        r0!, {r2-r5}" br
+      "subs       r0, #48" __ // pointer to r[1]
+      "ldm        r0!, {r2-r5}" __
+      "adds       r2, r8" __
+      "adcs       r3, r9" __
+      "adcs       r4, r12" __
+      "adcs       r5, lr" __
+      "movs       r6, #0" __
+      "adc        r6, r6, r5, lsr #31" __
+      "adc        r6, #0" __
+      "bic        r5, #0x80000000" __
+      "adds       r2, r6" __
+      "adcs       r3, #0" __
+      "adcs       r4, #0" __
+      "adcs       r5, #0" __
+      "subs       r0, #32" __ // pointer to r[0]
+      "stm        r0!, {r2-r5}" __
 
-      "ldm        r0, {r2-r5}" br
-      "subs       r2, r8" br
-      "sbcs       r3, r9" br
-      "sbcs       r4, r12" br
-      "sbcs       r5, lr" br
-      "sbcs       r6, r6" br
-      "rsbs       r6, #0" br
-      "subs       r2, r2, r6, lsl #1" br
-      "sbcs       r3, #0" br
-      "sbcs       r4, #0" br
-      "sbcs       r5, #0" br
-      "sbcs       r7, r7" br
-      "add        r3, r3, r7, lsl #1" br
-      "stm        r0!, {r2-r5}" br
-      "pop        {r4-r9, pc}" br
+      "ldm        r0, {r2-r5}" __
+      "subs       r2, r8" __
+      "sbcs       r3, r9" __
+      "sbcs       r4, r12" __
+      "sbcs       r5, lr" __
+      "sbcs       r6, r6" __
+      "rsbs       r6, #0" __
+      "subs       r2, r2, r6, lsl #1" __
+      "sbcs       r3, #0" __
+      "sbcs       r4, #0" __
+      "sbcs       r5, #0" __
+      "sbcs       r7, r7" __
+      "add        r3, r3, r7, lsl #1" __
+      "stm        r0!, {r2-r5}" __
+      "pop        {r4-r9, pc}" __
       : : : "r0","r1","r2","r3","r12","lr","cc","memory"
 
 #else
-      "push       {r4-r7}" br
-      "ldm        r1!, {r2-r5}" br
-      "push       {r2-r5}" br
-      "ldm        r1!, {r2-r5}" br
-      "pop        {r6, r7}" br
-      "adds       r2, r6" br
-      "adcs       r3, r7" br
-      "pop        {r6, r7}" br
-      "adcs       r4, r6" br
-      "adcs       r5, r7" br
-      "sub        sp, #16" br
-      "movs       r6, #0" br
-      "adcs       r6, r6" br
-      "lsls       r5, #1" br
-      "adcs       r6, r6" br
-      "lsrs       r5, #1" br
-      "movs       r7, #0" br
-      "adds       r2, r6" br
-      "adcs       r3, r7" br
-      "adcs       r4, r7" br
-      "adcs       r5, r7" br
-      "stm        r0!, {r2-r5}" br // a[0]+a[1]
+      "push       {r4-r7}" __
+      "ldm        r1!, {r2-r5}" __
+      "push       {r2-r5}" __
+      "ldm        r1!, {r2-r5}" __
+      "pop        {r6, r7}" __
+      "adds       r2, r6" __
+      "adcs       r3, r7" __
+      "pop        {r6, r7}" __
+      "adcs       r4, r6" __
+      "adcs       r5, r7" __
+      "sub        sp, #16" __
+      "movs       r6, #0" __
+      "adcs       r6, r6" __
+      "lsls       r5, #1" __
+      "adcs       r6, r6" __
+      "lsrs       r5, #1" __
+      "movs       r7, #0" __
+      "adds       r2, r6" __
+      "adcs       r3, r7" __
+      "adcs       r4, r7" __
+      "adcs       r5, r7" __
+      "stm        r0!, {r2-r5}" __ // a[0]+a[1]
 
-      "subs       r1, #16" br // restore pointer
-      "ldm        r1!, {r2-r5}" br
-      "pop        {r6, r7}" br
-      "subs       r2, r6" br
-      "sbcs       r3, r7" br
-      "pop        {r6, r7}" br
-      "sbcs       r4, r6" br
-      "sbcs       r5, r7" br
-      "sbcs       r6, r6" br
-      "rsbs       r6, #0" br
-      "lsls       r6, #1" br
-      "movs       r7, #0" br
-      "subs       r2, r6" br
-      "sbcs       r3, r7" br
-      "sbcs       r4, r7" br
-      "sbcs       r5, r7" br
-      "sbcs       r7, r7" br
-      "lsls       r7, #1" br
-      "adds       r3, r7" br
-      "stm        r0!, {r2-r5}" br // a[1]-a[0]
+      "subs       r1, #16" __ // restore pointer
+      "ldm        r1!, {r2-r5}" __
+      "pop        {r6, r7}" __
+      "subs       r2, r6" __
+      "sbcs       r3, r7" __
+      "pop        {r6, r7}" __
+      "sbcs       r4, r6" __
+      "sbcs       r5, r7" __
+      "sbcs       r6, r6" __
+      "rsbs       r6, #0" __
+      "lsls       r6, #1" __
+      "movs       r7, #0" __
+      "subs       r2, r6" __
+      "sbcs       r3, r7" __
+      "sbcs       r4, r7" __
+      "sbcs       r5, r7" __
+      "sbcs       r7, r7" __
+      "lsls       r7, #1" __
+      "adds       r3, r7" __
+      "stm        r0!, {r2-r5}" __ // a[1]-a[0]
 
-      "ldm        r1!, {r2-r7}" br // a[2] & a[3] lower 2 in r6, r7
-      "adds       r2, r6" br
-      "adcs       r3, r7" br
-      "ldm        r1!, {r6, r7}" br // a[3] upper two words
-      "adcs       r4, r6" br
-      "adcs       r5, r7" br
-      "movs       r6, #0" br
-      "adcs       r6, r6" br
-      "lsls       r5, #1" br
-      "adcs       r6, r6" br
-      "lsrs       r5, #1" br
-      "movs       r7, #0" br
-      "adds       r2, r6" br
-      "adcs       r3, r7" br
-      "adcs       r4, r7" br
-      "adcs       r5, r7" br
-      "push       {r2-r5}" br // store for later
+      "ldm        r1!, {r2-r7}" __ // a[2] & a[3] lower 2 in r6, r7
+      "adds       r2, r6" __
+      "adcs       r3, r7" __
+      "ldm        r1!, {r6, r7}" __ // a[3] upper two words
+      "adcs       r4, r6" __
+      "adcs       r5, r7" __
+      "movs       r6, #0" __
+      "adcs       r6, r6" __
+      "lsls       r5, #1" __
+      "adcs       r6, r6" __
+      "lsrs       r5, #1" __
+      "movs       r7, #0" __
+      "adds       r2, r6" __
+      "adcs       r3, r7" __
+      "adcs       r4, r7" __
+      "adcs       r5, r7" __
+      "push       {r2-r5}" __ // store for later
 
-      "subs       r1, #32" br // restore pointer
-      "ldm        r1!, {r2-r7}" br // a[2] & a[3] lower 2 in r6, r7
-      "subs       r2, r6" br
-      "sbcs       r3, r7" br
-      "ldm        r1!, {r6, r7}" br // a[3] upper two words
-      "sbcs       r4, r6" br
-      "sbcs       r5, r7" br
-      "sbcs       r6, r6" br
-      "rsbs       r6, #0" br
-      "lsls       r6, #1" br
-      "movs       r7, #0" br
-      "subs       r2, r6" br
-      "sbcs       r3, r7" br
-      "sbcs       r4, r7" br
-      "sbcs       r5, r7" br
-      "sbcs       r7, r7" br
-      "lsls       r7, #1" br
-      "adds       r3, r7" br
-      "adds       r0, #16" br
-      "stm        r0!, {r2-r5}" br
+      "subs       r1, #32" __ // restore pointer
+      "ldm        r1!, {r2-r7}" __ // a[2] & a[3] lower 2 in r6, r7
+      "subs       r2, r6" __
+      "sbcs       r3, r7" __
+      "ldm        r1!, {r6, r7}" __ // a[3] upper two words
+      "sbcs       r4, r6" __
+      "sbcs       r5, r7" __
+      "sbcs       r6, r6" __
+      "rsbs       r6, #0" __
+      "lsls       r6, #1" __
+      "movs       r7, #0" __
+      "subs       r2, r6" __
+      "sbcs       r3, r7" __
+      "sbcs       r4, r7" __
+      "sbcs       r5, r7" __
+      "sbcs       r7, r7" __
+      "lsls       r7, #1" __
+      "adds       r3, r7" __
+      "adds       r0, #16" __
+      "stm        r0!, {r2-r5}" __
 
       // c = a[1]+a[0] in r[0]
       // a = a[1]-a[0] in r[1]
       // b = a[2]+a[3] in [r8, r9, r12, lr]
       // d = a[2]-a[3] in [r2, r3, r4, r5] and r[3]
 
-      "subs       r0, #64" br // restore pointer to c in r[0]
-      "ldm        r0!, {r6, r7}" br
-      "subs       r2, r6" br
-      "sbcs       r3, r7" br
-      "ldm        r0!, {r6, r7}" br
-      "sbcs       r4, r6" br
-      "sbcs       r5, r7" br
-      "sbcs       r6, r6" br
-      "rsbs       r6, #0" br
-      "lsls       r6, #1" br
-      "movs       r7, #0" br
-      "subs       r2, r6" br
-      "sbcs       r3, r7" br
-      "sbcs       r4, r7" br
-      "sbcs       r5, r7" br
-      "sbcs       r7, r7" br
-      "lsls       r7, #1" br
-      "adds       r3, r7" br
-      "adds       r0, #16" br // pointer to r[2]
-      "stm        r0!, {r2-r5}" br
+      "subs       r0, #64" __ // restore pointer to c in r[0]
+      "ldm        r0!, {r6, r7}" __
+      "subs       r2, r6" __
+      "sbcs       r3, r7" __
+      "ldm        r0!, {r6, r7}" __
+      "sbcs       r4, r6" __
+      "sbcs       r5, r7" __
+      "sbcs       r6, r6" __
+      "rsbs       r6, #0" __
+      "lsls       r6, #1" __
+      "movs       r7, #0" __
+      "subs       r2, r6" __
+      "sbcs       r3, r7" __
+      "sbcs       r4, r7" __
+      "sbcs       r5, r7" __
+      "sbcs       r7, r7" __
+      "lsls       r7, #1" __
+      "adds       r3, r7" __
+      "adds       r0, #16" __ // pointer to r[2]
+      "stm        r0!, {r2-r5}" __
 
-      "ldm        r0!, {r2-r5}" br // load d
-      "subs       r0, #64" br // restore pointer to c in r[0]
-      "ldm        r0!, {r6, r7}" br
-      "adds       r2, r6" br
-      "adcs       r3, r7" br
-      "ldm        r0!, {r6, r7}" br
-      "adcs       r4, r6" br
-      "adcs       r5, r7" br
-      "movs       r6, #0" br
-      "adcs       r6, r6" br
-      "lsls       r5, #1" br
-      "adcs       r6, r6" br
-      "lsrs       r5, #1" br
-      "movs       r7, #0" br
-      "adds       r2, r6" br
-      "adcs       r3, r7" br
-      "adcs       r4, r7" br
-      "adcs       r5, r7" br
-      "adds       r0, #32" br // pointer to r[3]
-      "stm        r0!, {r2-r5}" br
+      "ldm        r0!, {r2-r5}" __ // load d
+      "subs       r0, #64" __ // restore pointer to c in r[0]
+      "ldm        r0!, {r6, r7}" __
+      "adds       r2, r6" __
+      "adcs       r3, r7" __
+      "ldm        r0!, {r6, r7}" __
+      "adcs       r4, r6" __
+      "adcs       r5, r7" __
+      "movs       r6, #0" __
+      "adcs       r6, r6" __
+      "lsls       r5, #1" __
+      "adcs       r6, r6" __
+      "lsrs       r5, #1" __
+      "movs       r7, #0" __
+      "adds       r2, r6" __
+      "adcs       r3, r7" __
+      "adcs       r4, r7" __
+      "adcs       r5, r7" __
+      "adds       r0, #32" __ // pointer to r[3]
+      "stm        r0!, {r2-r5}" __
 
-      "subs       r0, #48" br // pointer to r[1]
-      "ldm        r0!, {r2-r5}" br
-      "pop        {r6, r7}" br
-      "adds       r2, r6" br
-      "adcs       r3, r7" br
-      "pop        {r6, r7}" br
-      "adcs       r4, r6" br
-      "adcs       r5, r7" br
-      "sub        sp, #16" br
-      "movs       r6, #0" br
-      "adcs       r6, r6" br
-      "lsls       r5, #1" br
-      "adcs       r6, r6" br
-      "lsrs       r5, #1" br
-      "movs       r7, #0" br
-      "adds       r2, r6" br
-      "adcs       r3, r7" br
-      "adcs       r4, r7" br
-      "adcs       r5, r7" br
-      "subs       r0, #32" br // pointer to r[0]
-      "stm        r0!, {r2-r5}" br
+      "subs       r0, #48" __ // pointer to r[1]
+      "ldm        r0!, {r2-r5}" __
+      "pop        {r6, r7}" __
+      "adds       r2, r6" __
+      "adcs       r3, r7" __
+      "pop        {r6, r7}" __
+      "adcs       r4, r6" __
+      "adcs       r5, r7" __
+      "sub        sp, #16" __
+      "movs       r6, #0" __
+      "adcs       r6, r6" __
+      "lsls       r5, #1" __
+      "adcs       r6, r6" __
+      "lsrs       r5, #1" __
+      "movs       r7, #0" __
+      "adds       r2, r6" __
+      "adcs       r3, r7" __
+      "adcs       r4, r7" __
+      "adcs       r5, r7" __
+      "subs       r0, #32" __ // pointer to r[0]
+      "stm        r0!, {r2-r5}" __
 
-      "ldm        r0!, {r2-r5}" br
-      "pop        {r6, r7}" br
-      "subs       r2, r6" br
-      "sbcs       r3, r7" br
-      "pop        {r6, r7}" br
-      "sbcs       r4, r6" br
-      "sbcs       r5, r7" br
-      "sbcs       r6, r6" br
-      "rsbs       r6, #0" br
-      "lsls       r6, #1" br
-      "movs       r7, #0" br
-      "subs       r2, r6" br
-      "sbcs       r3, r7" br
-      "sbcs       r4, r7" br
-      "sbcs       r5, r7" br
-      "sbcs       r7, r7" br
-      "lsls       r7, #1" br
-      "adds       r3, r7" br
-      "subs       r0, #16" br
-      "stm        r0!, {r2-r5}" br
-      "pop        {r4-r7}" br
-      "bx         lr" br
+      "ldm        r0!, {r2-r5}" __
+      "pop        {r6, r7}" __
+      "subs       r2, r6" __
+      "sbcs       r3, r7" __
+      "pop        {r6, r7}" __
+      "sbcs       r4, r6" __
+      "sbcs       r5, r7" __
+      "sbcs       r6, r6" __
+      "rsbs       r6, #0" __
+      "lsls       r6, #1" __
+      "movs       r7, #0" __
+      "subs       r2, r6" __
+      "sbcs       r3, r7" __
+      "sbcs       r4, r7" __
+      "sbcs       r5, r7" __
+      "sbcs       r7, r7" __
+      "lsls       r7, #1" __
+      "adds       r3, r7" __
+      "subs       r0, #16" __
+      "stm        r0!, {r2-r5}" __
+      "pop        {r4-r7}" __
+      "bx         lr" __
       : : : "r0","r1","r2","r3","cc","memory"
 #endif
    );
@@ -688,68 +688,68 @@ void _alfn _naked bigint_red(uint32_t *r, const uint32_t *a)
 {
    // clang-format off
    asm(
-      ".syntax unified" br
+      ".syntax unified" __
 #ifdef __thumb2__
-      "push       {r4-r7, lr}" br
-      "ldm        r1, {r2-r7, r12, lr}" br
-      "movs       r1, #0" br
-      "adds       r6, r6" br
-      "adcs       r7, r7" br
-      "adcs       r12, r12" br
-      "adcs       lr, lr" br
-      "adcs       r1, r1" br
-      "adds       r5, lr" br
-      "adcs       r1, #0" br
-      "lsls       r5, #1" br
-      "adcs       r1, r1" br
-      "lsrs       r5, #1" br
-      "adds       r2, r6" br
-      "adcs       r3, r7" br
-      "adcs       r4, r12" br
-      "adcs       r5, #0" br
-      "adds       r2, r1" br
-      "adcs       r3, #0" br
-      "adcs       r4, #0" br
-      "adcs       r5, #0" br
-      "stm        r0!, {r2-r5}" br
-      "pop        {r4-r7, pc}" br
+      "push       {r4-r7, lr}" __
+      "ldm        r1, {r2-r7, r12, lr}" __
+      "movs       r1, #0" __
+      "adds       r6, r6" __
+      "adcs       r7, r7" __
+      "adcs       r12, r12" __
+      "adcs       lr, lr" __
+      "adcs       r1, r1" __
+      "adds       r5, lr" __
+      "adcs       r1, #0" __
+      "lsls       r5, #1" __
+      "adcs       r1, r1" __
+      "lsrs       r5, #1" __
+      "adds       r2, r6" __
+      "adcs       r3, r7" __
+      "adcs       r4, r12" __
+      "adcs       r5, #0" __
+      "adds       r2, r1" __
+      "adcs       r3, #0" __
+      "adcs       r4, #0" __
+      "adcs       r5, #0" __
+      "stm        r0!, {r2-r5}" __
+      "pop        {r4-r7, pc}" __
       : : : "r0","r1","r2","r3","r12","lr","cc","memory"
 
 #else
-      "push       {r4-r7, lr}" br
-      "ldm        r1!, {r4-r7}" br  // lower half
-      "mov        r12, r4" br
-      "mov        lr, r5" br
-      "ldm        r1!, {r2-r5}" br  // upper half
+      "push       {r4-r7, lr}" __
+      "ldm        r1!, {r4-r7}" __  // lower half
+      "mov        r12, r4" __
+      "mov        lr, r5" __
+      "ldm        r1!, {r2-r5}" __  // upper half
 // First double upper half, save carry into R1
-      "movs       r1, #0" br        // for carries
-      "adds       r2, r2" br
-      "adcs       r3, r3" br
-      "adcs       r4, r4" br
-      "adcs       r5, r5" br
-      "adcs       r1, r1" br        // high-half carry in r1
+      "movs       r1, #0" __        // for carries
+      "adds       r2, r2" __
+      "adcs       r3, r3" __
+      "adcs       r4, r4" __
+      "adcs       r5, r5" __
+      "adcs       r1, r1" __        // high-half carry in r1
 // Do top word first, to avoid carry later
-      "adds       r7, r5" br
-      "movs       r5, #0" br
-      "adcs       r1, r5" br        // store carry in R1
-      "lsls       r7, #1" br
-      "adcs       r1, r1" br        // carry*2 + top bit
-      "lsrs       r7, #1" br        // and clear top-bit of low-half
+      "adds       r7, r5" __
+      "movs       r5, #0" __
+      "adcs       r1, r5" __        // store carry in R1
+      "lsls       r7, #1" __
+      "adcs       r1, r1" __        // carry*2 + top bit
+      "lsrs       r7, #1" __        // and clear top-bit of low-half
 // Now start from bottom again
-      "mov        r5, r12" br
-      "adds       r5, r2" br
-      "mov        r2, lr" br
-      "adcs       r2, r3" br
-      "adcs       r6, r4" br
-      "movs       r3, #0" br
-      "adcs       r7, r3" br
+      "mov        r5, r12" __
+      "adds       r5, r2" __
+      "mov        r2, lr" __
+      "adcs       r2, r3" __
+      "adcs       r6, r4" __
+      "movs       r3, #0" __
+      "adcs       r7, r3" __
 // Finally do carry bits
-      "adds       r1, r5" br
-      "adcs       r2, r3" br
-      "adcs       r6, r3" br
-      "adcs       r7, r3" br        // cannot overflow
-      "stm        r0!, {r1, r2, r6, r7}" br
-      "pop        {r4-r7, pc}" br
+      "adds       r1, r5" __
+      "adcs       r2, r3" __
+      "adcs       r6, r3" __
+      "adcs       r7, r3" __        // cannot overflow
+      "stm        r0!, {r1, r2, r6, r7}" __
+      "pop        {r4-r7, pc}" __
       : : : "r0","r1","r2","r3","r12","lr","cc","memory"
 #endif
    );
@@ -790,12 +790,12 @@ void _alfn _naked bigint_sqr(uint32_t *r, const uint32_t *x)
 {
    // clang-format off
    asm(
-      ".syntax unified" br
-      "mov.w      r2, r1" br
+      ".syntax unified" __
+      "mov.w      r2, r1" __
       // Thumb-2 MUL is fast enough, use it for SQR too.
-      ".thumb_func" br
-      // ".global    bigint_mul" br
-   "bigint_mul:" br
+      ".thumb_func" __
+      // ".global    bigint_mul" __
+   "bigint_mul:" __
 #ifdef __ARM_FEATURE_DSP
       /*
        * Thumb-2 with DSP Extension (UMAAL). uV:109c; real ~100c.
@@ -807,46 +807,46 @@ void _alfn _naked bigint_sqr(uint32_t *r, const uint32_t *x)
        *  - change register allocation to produce more T-1 encodings; saved
        *    bytes despite STM breakdown (-10B)
        */
-      "push       {r4-r9, lr}" br
-      "ldm        r1, {r8-r9, r12, lr}" br
-      "ldr        r1, [r2]" br
-      "umull      r4, r3, r1, r8" br
-      "movs       r5, #0" br
-      "umlal      r3, r5, r1, r9" br
-      "movs       r6, #0" br
-      "umlal      r5, r6, r1, r12" br
-      "str        r4, [r0]" br
-      "movs       r7, #0" br
-      "umlal      r6, r7, r1, lr" br
+      "push       {r4-r9, lr}" __
+      "ldm        r1, {r8-r9, r12, lr}" __
+      "ldr        r1, [r2]" __
+      "umull      r4, r3, r1, r8" __
+      "movs       r5, #0" __
+      "umlal      r3, r5, r1, r9" __
+      "movs       r6, #0" __
+      "umlal      r5, r6, r1, r12" __
+      "str        r4, [r0]" __
+      "movs       r7, #0" __
+      "umlal      r6, r7, r1, lr" __
 
-      "ldr        r1, [r2, #4]" br
-      "movs       r4, #0" br
-      "umlal      r3, r4, r1, r8" br
-      "umaal      r4, r5, r1, r9" br
-      "str        r3, [r0, #4]" br
-      "umaal      r5, r6, r1, r12" br
-      "umaal      r6, r7, r1, lr" br
+      "ldr        r1, [r2, #4]" __
+      "movs       r4, #0" __
+      "umlal      r3, r4, r1, r8" __
+      "umaal      r4, r5, r1, r9" __
+      "str        r3, [r0, #4]" __
+      "umaal      r5, r6, r1, r12" __
+      "umaal      r6, r7, r1, lr" __
 
-      "ldr        r1, [r2, #8]" br
-      "movs       r3, #0" br
-      "umlal      r4, r3, r1, r8" br
-      "umaal      r3, r5, r1, r9" br
-      "str        r4, [r0, #8]" br
-      "umaal      r5, r6, r1, r12" br
-      "umaal      r6, r7, r1, lr" br
+      "ldr        r1, [r2, #8]" __
+      "movs       r3, #0" __
+      "umlal      r4, r3, r1, r8" __
+      "umaal      r3, r5, r1, r9" __
+      "str        r4, [r0, #8]" __
+      "umaal      r5, r6, r1, r12" __
+      "umaal      r6, r7, r1, lr" __
 
-      "ldr        r1, [r2, #12]" br
-      "movs       r4, #0" br
-      "umlal      r3, r4, r1, r8" br
-      "str        r3, [r0, #12]" br
-      "umaal      r4, r5, r1, r9" br
-      "str        r4, [r0, #16]" br
-      "umaal      r5, r6, r1, r12" br
-      "str        r5, [r0, #20]" br
-      "umaal      r6, r7, r1, lr" br
-      "str        r6, [r0, #24]" br
-      "str        r7, [r0, #28]" br
-      "pop        {r4-r9, pc}" br
+      "ldr        r1, [r2, #12]" __
+      "movs       r4, #0" __
+      "umlal      r3, r4, r1, r8" __
+      "str        r3, [r0, #12]" __
+      "umaal      r4, r5, r1, r9" __
+      "str        r4, [r0, #16]" __
+      "umaal      r5, r6, r1, r12" __
+      "str        r5, [r0, #20]" __
+      "umaal      r6, r7, r1, lr" __
+      "str        r6, [r0, #24]" __
+      "str        r7, [r0, #28]" __
+      "pop        {r4-r9, pc}" __
       : : : "r1","r2","r3","r12","lr","cc","memory" // r0 remains
 
 #else
@@ -856,78 +856,78 @@ void _alfn _naked bigint_sqr(uint32_t *r, const uint32_t *x)
        * Translate UMAAL to UMULL and 2 ADD/ADC pairs. slightly better than
        * MOV #0, UMLAL and 1 ADD/ADC pair.
        */
-      "push       {r4-r11, lr}" br
-      "ldm        r1, {r8-r11}" br
-      "ldr        r1, [r2]" br
-      "umull      r4, r3, r1, r8" br
-      "movs       r5, #0" br
-      "umlal      r3, r5, r1, r9" br
-      "movs       r6, #0" br
-      "umlal      r5, r6, r1, r10" br
-      "mov        r12, #0" br
-      "umlal      r6, r12, r1, r11" br
-      "str        r4, [r0], #4" br
+      "push       {r4-r11, lr}" __
+      "ldm        r1, {r8-r11}" __
+      "ldr        r1, [r2]" __
+      "umull      r4, r3, r1, r8" __
+      "movs       r5, #0" __
+      "umlal      r3, r5, r1, r9" __
+      "movs       r6, #0" __
+      "umlal      r5, r6, r1, r10" __
+      "mov        r12, #0" __
+      "umlal      r6, r12, r1, r11" __
+      "str        r4, [r0], #4" __
 
-      "ldr        r1, [r2, #4]" br
-      "movs       r4, #0" br
-      "umlal      r3, r4, r1, r8" br
-      "umull      r7, lr, r1, r9" br
-      "adds       r7, r5" br
-      "adc        lr, #0" br
-      "adds       r4, r7" br
-      "adc        r5, lr, #0" br
-      "umull      r7, lr, r1, r10" br
-      "adds       r7, r6" br
-      "adc        lr, #0" br
-      "adds       r5, r7" br
-      "adc        r6, lr, #0" br
-      "umull      r7, lr, r1, r11" br
-      "adds       r7, r12" br
-      "adc        lr, #0" br
-      "adds       r6, r7" br
-      "adc        r12, lr, #0" br
-      "str        r3, [r0], #4" br
+      "ldr        r1, [r2, #4]" __
+      "movs       r4, #0" __
+      "umlal      r3, r4, r1, r8" __
+      "umull      r7, lr, r1, r9" __
+      "adds       r7, r5" __
+      "adc        lr, #0" __
+      "adds       r4, r7" __
+      "adc        r5, lr, #0" __
+      "umull      r7, lr, r1, r10" __
+      "adds       r7, r6" __
+      "adc        lr, #0" __
+      "adds       r5, r7" __
+      "adc        r6, lr, #0" __
+      "umull      r7, lr, r1, r11" __
+      "adds       r7, r12" __
+      "adc        lr, #0" __
+      "adds       r6, r7" __
+      "adc        r12, lr, #0" __
+      "str        r3, [r0], #4" __
 
-      "ldr        r1, [r2, #8]" br
-      "movs       r3, #0" br
-      "umlal      r4, r3, r1, r8" br
-      "umull      r7, lr, r1, r9" br
-      "adds       r7, r5" br
-      "adc        lr, #0" br
-      "adds       r3, r7" br
-      "adc        r5, lr, #0" br
-      "umull      r7, lr, r1, r10" br
-      "adds       r7, r6" br
-      "adc        lr, #0" br
-      "adds       r5, r7" br
-      "adc        r6, lr, #0" br
-      "umull      r7, lr, r1, r11" br
-      "adds       r7, r12" br
-      "adc        lr, #0" br
-      "adds       r6, r7" br
-      "adc        r12, lr, #0" br
-      "str        r4, [r0], #4" br
+      "ldr        r1, [r2, #8]" __
+      "movs       r3, #0" __
+      "umlal      r4, r3, r1, r8" __
+      "umull      r7, lr, r1, r9" __
+      "adds       r7, r5" __
+      "adc        lr, #0" __
+      "adds       r3, r7" __
+      "adc        r5, lr, #0" __
+      "umull      r7, lr, r1, r10" __
+      "adds       r7, r6" __
+      "adc        lr, #0" __
+      "adds       r5, r7" __
+      "adc        r6, lr, #0" __
+      "umull      r7, lr, r1, r11" __
+      "adds       r7, r12" __
+      "adc        lr, #0" __
+      "adds       r6, r7" __
+      "adc        r12, lr, #0" __
+      "str        r4, [r0], #4" __
 
-      "ldr        r1, [r2, #12]" br
-      "movs       r4, #0" br
-      "umlal      r3, r4, r1, r8" br
-      "umull      r7, lr, r1, r9" br
-      "adds       r7, r5" br
-      "adc        lr, #0" br
-      "adds       r4, r7" br
-      "adc        r5, lr, #0" br
-      "umull      r7, lr, r1, r10" br
-      "adds       r7, r6" br
-      "adc        lr, #0" br
-      "adds       r5, r7" br
-      "adc        r6, lr, #0" br
-      "umull      r7, lr, r1, r11" br
-      "adds       r7, r12" br
-      "adc        lr, #0" br
-      "adds       r6, r7" br
-      "adc        r12, lr, #0" br
-      "stm        r0, {r3-r6, r12}" br
-      "pop        {r4-r11, pc}" br
+      "ldr        r1, [r2, #12]" __
+      "movs       r4, #0" __
+      "umlal      r3, r4, r1, r8" __
+      "umull      r7, lr, r1, r9" __
+      "adds       r7, r5" __
+      "adc        lr, #0" __
+      "adds       r4, r7" __
+      "adc        r5, lr, #0" __
+      "umull      r7, lr, r1, r10" __
+      "adds       r7, r6" __
+      "adc        lr, #0" __
+      "adds       r5, r7" __
+      "adc        r6, lr, #0" __
+      "umull      r7, lr, r1, r11" __
+      "adds       r7, r12" __
+      "adc        lr, #0" __
+      "adds       r6, r7" __
+      "adc        r12, lr, #0" __
+      "stm        r0, {r3-r6, r12}" __
+      "pop        {r4-r11, pc}" __
       : : : "r0","r1","r2","r3","r12","lr","cc","memory"
 #endif
    );
@@ -942,354 +942,354 @@ void _naked bigint_mul(uint32_t *r, const uint32_t *x, const uint32_t *y)
 {
    // clang-format off
    asm(
-      ".syntax unified" br
-      "push       {r4-r7, lr}" br
-      "mov        r3, r8" br
-      "mov        r4, r9" br
-      "mov        r5, r10" br
-      "push       {r3-r5}" br
-      "mov        lr, r0" br
-      "mov        r12, r1" br
-      "mov        r10, r2" br
-      "ldm        r2!, {r4, r5}" br
-      "ldm        r1!, {r2, r3, r6, r7}" br
+      ".syntax unified" __
+      "push       {r4-r7, lr}" __
+      "mov        r3, r8" __
+      "mov        r4, r9" __
+      "mov        r5, r10" __
+      "push       {r3-r5}" __
+      "mov        lr, r0" __
+      "mov        r12, r1" __
+      "mov        r10, r2" __
+      "ldm        r2!, {r4, r5}" __
+      "ldm        r1!, {r2, r3, r6, r7}" __
       // MUL128
       // MUL64
-      "mov        r6, r5" br
-      "mov        r1, r2" br
-      "subs       r5, r4" br
-      "sbcs       r0, r0" br
-      "eors       r5, r0" br
-      "subs       r5, r0" br
-      "subs       r1, r3" br
-      "sbcs       r7, r7" br
-      "eors       r1, r7" br
-      "subs       r1, r7" br
-      "eors       r7, r0" br
-      "mov        r9, r1" br
-      "mov        r8, r5" br
+      "mov        r6, r5" __
+      "mov        r1, r2" __
+      "subs       r5, r4" __
+      "sbcs       r0, r0" __
+      "eors       r5, r0" __
+      "subs       r5, r0" __
+      "subs       r1, r3" __
+      "sbcs       r7, r7" __
+      "eors       r1, r7" __
+      "subs       r1, r7" __
+      "eors       r7, r0" __
+      "mov        r9, r1" __
+      "mov        r8, r5" __
 // r4xr2->r1:r0 t:r5
-      "lsrs       r1, r4, #16" br
-      "uxth       r4, r4" br
-      "mov        r0, r4" br
-      "uxth       r5, r2" br
-      "lsrs       r2, #16" br
-      "muls       r0, r5" br   //00
-      "muls       r5, r1" br   //10
-      "muls       r4, r2" br   //01
-      "muls       r1, r2" br   //11
-      "lsls       r2, r4, #16" br
-      "lsrs       r4, #16" br
-      "adds       r0, r2" br
-      "adcs       r1, r4" br
-      "lsls       r2, r5, #16" br
-      "lsrs       r4, r5, #16" br
-      "adds       r0, r2" br
-      "adcs       r1, r4" br
+      "lsrs       r1, r4, #16" __
+      "uxth       r4, r4" __
+      "mov        r0, r4" __
+      "uxth       r5, r2" __
+      "lsrs       r2, #16" __
+      "muls       r0, r5" __   //00
+      "muls       r5, r1" __   //10
+      "muls       r4, r2" __   //01
+      "muls       r1, r2" __   //11
+      "lsls       r2, r4, #16" __
+      "lsrs       r4, #16" __
+      "adds       r0, r2" __
+      "adcs       r1, r4" __
+      "lsls       r2, r5, #16" __
+      "lsrs       r4, r5, #16" __
+      "adds       r0, r2" __
+      "adcs       r1, r4" __
 // r6xr3->r3:r2 t:r4,r5
-      "lsrs       r4, r6, #16" br
-      "uxth       r6, r6" br
-      "uxth       r5, r3" br
-      "lsrs       r3, r3, #16" br
-      "mov        r2, r6" br
-      "muls       r2, r5" br
-      "muls       r5, r4" br
-      "muls       r6, r3" br
-      "muls       r3, r4" br
-      "lsls       r4, r5, #16" br
-      "lsrs       r5, #16" br
-      "adds       r2, r4" br
-      "adcs       r3, r5" br
-      "lsls       r4, r6, #16" br
-      "lsrs       r5, r6, #16" br
-      "adds       r2, r4" br
-      "adcs       r3, r5" br
+      "lsrs       r4, r6, #16" __
+      "uxth       r6, r6" __
+      "uxth       r5, r3" __
+      "lsrs       r3, r3, #16" __
+      "mov        r2, r6" __
+      "muls       r2, r5" __
+      "muls       r5, r4" __
+      "muls       r6, r3" __
+      "muls       r3, r4" __
+      "lsls       r4, r5, #16" __
+      "lsrs       r5, #16" __
+      "adds       r2, r4" __
+      "adcs       r3, r5" __
+      "lsls       r4, r6, #16" __
+      "lsrs       r5, r6, #16" __
+      "adds       r2, r4" __
+      "adcs       r3, r5" __
 
-      "eors       r6, r6" br
-      "adds       r2, r1" br
-      "adcs       r3, r6" br
-      "mov        r1, r9" br
-      "mov        r5, r8" br
-      "mov        r8, r0" br
+      "eors       r6, r6" __
+      "adds       r2, r1" __
+      "adcs       r3, r6" __
+      "mov        r1, r9" __
+      "mov        r5, r8" __
+      "mov        r8, r0" __
 // r1xr5->r0:r1 t:r4,r6
-      "lsrs       r0, r1, #16" br
-      "uxth       r1, r1" br
-      "mov        r4, r1" br
-      "lsrs       r6, r5, #16" br
-      "uxth       r5, r5" br
-      "muls       r1, r5" br
-      "muls       r4, r6" br
-      "muls       r5, r0" br
-      "muls       r0, r6" br
-      "lsls       r6, r4, #16" br
-      "lsrs       r4, #16" br
-      "adds       r1, r6" br
-      "adcs       r0, r4" br
-      "lsls       r6, r5, #16" br
-      "lsrs       r5, #16" br
-      "adds       r1, r6" br
-      "adcs       r0, r5" br
+      "lsrs       r0, r1, #16" __
+      "uxth       r1, r1" __
+      "mov        r4, r1" __
+      "lsrs       r6, r5, #16" __
+      "uxth       r5, r5" __
+      "muls       r1, r5" __
+      "muls       r4, r6" __
+      "muls       r5, r0" __
+      "muls       r0, r6" __
+      "lsls       r6, r4, #16" __
+      "lsrs       r4, #16" __
+      "adds       r1, r6" __
+      "adcs       r0, r4" __
+      "lsls       r6, r5, #16" __
+      "lsrs       r5, #16" __
+      "adds       r1, r6" __
+      "adcs       r0, r5" __
 
-      "eors       r1, r7" br
-      "eors       r0, r7" br
-      "eors       r4, r4" br
-      "asrs       r7, #1" br
-      "adcs       r1, r2" br
-      "adcs       r2, r0" br
-      "adcs       r7, r4" br
-      "mov        r0, r8" br
-      "adds       r1, r0" br
-      "adcs       r2, r3" br
-      "adcs       r3, r7" br
+      "eors       r1, r7" __
+      "eors       r0, r7" __
+      "eors       r4, r4" __
+      "asrs       r7, #1" __
+      "adcs       r1, r2" __
+      "adcs       r2, r0" __
+      "adcs       r7, r4" __
+      "mov        r0, r8" __
+      "adds       r1, r0" __
+      "adcs       r2, r3" __
+      "adcs       r3, r7" __
 // -------------------------
-      "mov        r4, lr" br
-      "stm        r4!, {r0, r1}" br
-      "push       {r4}" br
-      "push       {r0, r1}" br
-      "mov        r1, r10" br
-      "mov        r10, r2" br
-      "ldm        r1, {r0, r1, r4, r5}" br
-      "mov        r2, r4" br
-      "mov        r7, r5" br
-      "subs       r2, r0" br
-      "sbcs       r7, r1" br
-      "sbcs       r6, r6" br
-      "eors       r2, r6" br
-      "eors       r7, r6" br
-      "subs       r2, r6" br
-      "sbcs       r7, r6" br
-      "push       {r2, r7}" br
-      "mov        r2, r12" br
-      "mov        r12, r3" br
-      "ldm        r2, {r0, r1, r2, r3}" br
-      "subs       r0, r2" br
-      "sbcs       r1, r3" br
-      "sbcs       r7, r7" br
-      "eors       r0, r7" br
-      "eors       r1, r7" br
-      "subs       r0, r7" br
-      "sbcs       r1, r7" br
-      "eors       r7, r6" br
-      "mov        lr, r7" br
-      "push       {r0, r1}" br
+      "mov        r4, lr" __
+      "stm        r4!, {r0, r1}" __
+      "push       {r4}" __
+      "push       {r0, r1}" __
+      "mov        r1, r10" __
+      "mov        r10, r2" __
+      "ldm        r1, {r0, r1, r4, r5}" __
+      "mov        r2, r4" __
+      "mov        r7, r5" __
+      "subs       r2, r0" __
+      "sbcs       r7, r1" __
+      "sbcs       r6, r6" __
+      "eors       r2, r6" __
+      "eors       r7, r6" __
+      "subs       r2, r6" __
+      "sbcs       r7, r6" __
+      "push       {r2, r7}" __
+      "mov        r2, r12" __
+      "mov        r12, r3" __
+      "ldm        r2, {r0, r1, r2, r3}" __
+      "subs       r0, r2" __
+      "sbcs       r1, r3" __
+      "sbcs       r7, r7" __
+      "eors       r0, r7" __
+      "eors       r1, r7" __
+      "subs       r0, r7" __
+      "sbcs       r1, r7" __
+      "eors       r7, r6" __
+      "mov        lr, r7" __
+      "push       {r0, r1}" __
       // MUL64
-      "mov        r6, r5" br
-      "mov        r1, r2" br
-      "subs       r5, r4" br
-      "sbcs       r0, r0" br
-      "eors       r5, r0" br
-      "subs       r5, r0" br
-      "subs       r1, r3" br
-      "sbcs       r7, r7" br
-      "eors       r1, r7" br
-      "subs       r1, r7" br
-      "eors       r7, r0" br
-      "mov        r9, r1" br
-      "mov        r8, r5" br
+      "mov        r6, r5" __
+      "mov        r1, r2" __
+      "subs       r5, r4" __
+      "sbcs       r0, r0" __
+      "eors       r5, r0" __
+      "subs       r5, r0" __
+      "subs       r1, r3" __
+      "sbcs       r7, r7" __
+      "eors       r1, r7" __
+      "subs       r1, r7" __
+      "eors       r7, r0" __
+      "mov        r9, r1" __
+      "mov        r8, r5" __
 // r4xr2->r1:r0 t:r5
-      "lsrs       r1, r4, #16" br
-      "uxth       r4, r4" br
-      "mov        r0, r4" br
-      "uxth       r5, r2" br
-      "lsrs       r2, #16" br
-      "muls       r0, r5" br   //00
-      "muls       r5, r1" br   //10
-      "muls       r4, r2" br   //01
-      "muls       r1, r2" br   //11
-      "lsls       r2, r4, #16" br
-      "lsrs       r4, #16" br
-      "adds       r0, r2" br
-      "adcs       r1, r4" br
-      "lsls       r2, r5, #16" br
-      "lsrs       r4, r5, #16" br
-      "adds       r0, r2" br
-      "adcs       r1, r4" br
+      "lsrs       r1, r4, #16" __
+      "uxth       r4, r4" __
+      "mov        r0, r4" __
+      "uxth       r5, r2" __
+      "lsrs       r2, #16" __
+      "muls       r0, r5" __   //00
+      "muls       r5, r1" __   //10
+      "muls       r4, r2" __   //01
+      "muls       r1, r2" __   //11
+      "lsls       r2, r4, #16" __
+      "lsrs       r4, #16" __
+      "adds       r0, r2" __
+      "adcs       r1, r4" __
+      "lsls       r2, r5, #16" __
+      "lsrs       r4, r5, #16" __
+      "adds       r0, r2" __
+      "adcs       r1, r4" __
 // r6xr3->r3:r2 t:r4,r5
-      "lsrs       r4, r6, #16" br
-      "uxth       r6, r6" br
-      "uxth       r5, r3" br
-      "lsrs       r3, #16" br
-      "mov        r2, r6" br
-      "muls       r2, r5" br
-      "muls       r5, r4" br
-      "muls       r6, r3" br
-      "muls       r3, r4" br
-      "lsls       r4, r5, #16" br
-      "lsrs       r5, #16" br
-      "adds       r2, r4" br
-      "adcs       r3, r5" br
-      "lsls       r4, r6, #16" br
-      "lsrs       r5, r6, #16" br
-      "adds       r2, r4" br
-      "adcs       r3, r5" br
+      "lsrs       r4, r6, #16" __
+      "uxth       r6, r6" __
+      "uxth       r5, r3" __
+      "lsrs       r3, #16" __
+      "mov        r2, r6" __
+      "muls       r2, r5" __
+      "muls       r5, r4" __
+      "muls       r6, r3" __
+      "muls       r3, r4" __
+      "lsls       r4, r5, #16" __
+      "lsrs       r5, #16" __
+      "adds       r2, r4" __
+      "adcs       r3, r5" __
+      "lsls       r4, r6, #16" __
+      "lsrs       r5, r6, #16" __
+      "adds       r2, r4" __
+      "adcs       r3, r5" __
 
-      "eors       r6, r6" br
-      "adds       r2, r1" br
-      "adcs       r3, r6" br
-      "mov        r1, r9" br
-      "mov        r5, r8" br
-      "mov        r8, r0" br
+      "eors       r6, r6" __
+      "adds       r2, r1" __
+      "adcs       r3, r6" __
+      "mov        r1, r9" __
+      "mov        r5, r8" __
+      "mov        r8, r0" __
 // r1xr5->r0:r1 t:r0,r6
-      "lsrs       r0, r1, #16" br
-      "uxth       r1, r1" br
-      "mov        r4, r1" br
-      "lsrs       r6, r5, #16" br
-      "uxth       r5, r5" br
-      "muls       r1, r5" br
-      "muls       r4, r6" br
-      "muls       r5, r0" br
-      "muls       r0, r6" br
-      "lsls       r6, r4, #16" br
-      "lsrs       r4, #16" br
-      "adds       r1, r6" br
-      "adcs       r0, r4" br
-      "lsls       r6, r5, #16" br
-      "lsrs       r5, #16" br
-      "adds       r1, r6" br
-      "adcs       r0, r5" br
+      "lsrs       r0, r1, #16" __
+      "uxth       r1, r1" __
+      "mov        r4, r1" __
+      "lsrs       r6, r5, #16" __
+      "uxth       r5, r5" __
+      "muls       r1, r5" __
+      "muls       r4, r6" __
+      "muls       r5, r0" __
+      "muls       r0, r6" __
+      "lsls       r6, r4, #16" __
+      "lsrs       r4, #16" __
+      "adds       r1, r6" __
+      "adcs       r0, r4" __
+      "lsls       r6, r5, #16" __
+      "lsrs       r5, #16" __
+      "adds       r1, r6" __
+      "adcs       r0, r5" __
 
-      "eors       r1, r7" br
-      "eors       r0, r7" br
-      "eors       r4, r4" br
-      "asrs       r7, #1" br
-      "adcs       r1, r2" br
-      "adcs       r2, r0" br
-      "adcs       r7, r4" br
-      "mov        r0, r8" br
-      "adds       r1, r0" br
-      "adcs       r2, r3" br
-      "adcs       r3, r7" br
-      "mov        r4, r10" br
-      "mov        r5, r12" br
-      "eors       r6, r6" br
-      "adds       r0, r4" br
-      "adcs       r1, r5" br
-      "adcs       r2, r6" br
-      "adcs       r3, r6" br
-      "mov        r10, r2" br
-      "mov        r12, r3" br
-      "pop        {r2-r5}" br
-      "push       {r0, r1}" br
-      "mov        r6, r5" br
-      "mov        r1, r2" br
-      "subs       r5, r4" br
-      "sbcs       r0, r0" br
-      "eors       r5, r0" br
-      "subs       r5, r0" br
-      "subs       r1, r3" br
-      "sbcs       r7, r7" br
-      "eors       r1, r7" br
-      "subs       r1, r7" br
-      "eors       r7, r0" br
-      "mov        r9, r1" br
-      "mov        r8, r5" br
+      "eors       r1, r7" __
+      "eors       r0, r7" __
+      "eors       r4, r4" __
+      "asrs       r7, #1" __
+      "adcs       r1, r2" __
+      "adcs       r2, r0" __
+      "adcs       r7, r4" __
+      "mov        r0, r8" __
+      "adds       r1, r0" __
+      "adcs       r2, r3" __
+      "adcs       r3, r7" __
+      "mov        r4, r10" __
+      "mov        r5, r12" __
+      "eors       r6, r6" __
+      "adds       r0, r4" __
+      "adcs       r1, r5" __
+      "adcs       r2, r6" __
+      "adcs       r3, r6" __
+      "mov        r10, r2" __
+      "mov        r12, r3" __
+      "pop        {r2-r5}" __
+      "push       {r0, r1}" __
+      "mov        r6, r5" __
+      "mov        r1, r2" __
+      "subs       r5, r4" __
+      "sbcs       r0, r0" __
+      "eors       r5, r0" __
+      "subs       r5, r0" __
+      "subs       r1, r3" __
+      "sbcs       r7, r7" __
+      "eors       r1, r7" __
+      "subs       r1, r7" __
+      "eors       r7, r0" __
+      "mov        r9, r1" __
+      "mov        r8, r5" __
 // r4xr2->r1:r0 t:r1,r5
-      "lsrs       r1, r4, #16" br
-      "uxth       r4, r4" br
-      "mov        r0, r4" br
-      "uxth       r5, r2" br
-      "lsrs       r2, #16" br
-      "muls       r0, r5" br   //00
-      "muls       r5, r1" br   //10
-      "muls       r4, r2" br   //01
-      "muls       r1, r2" br   //11
-      "lsls       r2, r4, #16" br
-      "lsrs       r4, #16" br
-      "adds       r0, r2" br
-      "adcs       r1, r4" br
-      "lsls       r2, r5, #16" br
-      "lsrs       r4, r5, #16" br
-      "adds       r0, r2" br
-      "adcs       r1, r4" br
+      "lsrs       r1, r4, #16" __
+      "uxth       r4, r4" __
+      "mov        r0, r4" __
+      "uxth       r5, r2" __
+      "lsrs       r2, #16" __
+      "muls       r0, r5" __   //00
+      "muls       r5, r1" __   //10
+      "muls       r4, r2" __   //01
+      "muls       r1, r2" __   //11
+      "lsls       r2, r4, #16" __
+      "lsrs       r4, #16" __
+      "adds       r0, r2" __
+      "adcs       r1, r4" __
+      "lsls       r2, r5, #16" __
+      "lsrs       r4, r5, #16" __
+      "adds       r0, r2" __
+      "adcs       r1, r4" __
 // r6xr3->r3:r2 t:r4,r5
-      "lsrs       r4, r6, #16" br
-      "uxth       r6, r6" br
-      "uxth       r5, r3" br
-      "lsrs       r3, #16" br
-      "mov        r2, r6" br
-      "muls       r2, r5" br
-      "muls       r5, r4" br
-      "muls       r6, r3" br
-      "muls       r3, r4" br
-      "lsls       r4, r5, #16" br
-      "lsrs       r5, #16" br
-      "adds       r2, r4" br
-      "adcs       r3, r5" br
-      "lsls       r4, r6, #16" br
-      "lsrs       r5, r6, #16" br
-      "adds       r2, r4" br
-      "adcs       r3, r5" br
+      "lsrs       r4, r6, #16" __
+      "uxth       r6, r6" __
+      "uxth       r5, r3" __
+      "lsrs       r3, #16" __
+      "mov        r2, r6" __
+      "muls       r2, r5" __
+      "muls       r5, r4" __
+      "muls       r6, r3" __
+      "muls       r3, r4" __
+      "lsls       r4, r5, #16" __
+      "lsrs       r5, #16" __
+      "adds       r2, r4" __
+      "adcs       r3, r5" __
+      "lsls       r4, r6, #16" __
+      "lsrs       r5, r6, #16" __
+      "adds       r2, r4" __
+      "adcs       r3, r5" __
 
-      "eors       r6, r6" br
-      "adds       r2, r1" br
-      "adcs       r3, r6" br
-      "mov        r1, r9" br
-      "mov        r5, r8" br
-      "mov        r8, r0" br
+      "eors       r6, r6" __
+      "adds       r2, r1" __
+      "adcs       r3, r6" __
+      "mov        r1, r9" __
+      "mov        r5, r8" __
+      "mov        r8, r0" __
 // r1xr5->r0:r1 t:r4,r6
-      "lsrs       r0, r1, #16" br
-      "uxth       r1, r1" br
-      "mov        r4, r1" br
-      "lsrs       r6, r5, #16" br
-      "uxth       r5, r5" br
-      "muls       r1, r5" br
-      "muls       r4, r6" br
-      "muls       r5, r0" br
-      "muls       r0, r6" br
-      "lsls       r6, r4, #16" br
-      "lsrs       r4, #16" br
-      "adds       r1, r6" br
-      "adcs       r0, r4" br
-      "lsls       r6, r5, #16" br
-      "lsrs       r5, #16" br
-      "adds       r1, r6" br
-      "adcs       r0, r5" br
+      "lsrs       r0, r1, #16" __
+      "uxth       r1, r1" __
+      "mov        r4, r1" __
+      "lsrs       r6, r5, #16" __
+      "uxth       r5, r5" __
+      "muls       r1, r5" __
+      "muls       r4, r6" __
+      "muls       r5, r0" __
+      "muls       r0, r6" __
+      "lsls       r6, r4, #16" __
+      "lsrs       r4, #16" __
+      "adds       r1, r6" __
+      "adcs       r0, r4" __
+      "lsls       r6, r5, #16" __
+      "lsrs       r5, #16" __
+      "adds       r1, r6" __
+      "adcs       r0, r5" __
 
-      "eors       r1, r7" br
-      "eors       r0, r7" br
-      "eors       r4, r4" br
-      "asrs       r7, #1" br
-      "adcs       r1, r2" br
-      "adcs       r2, r0" br
-      "adcs       r7, r4" br
-      "mov        r0, r8" br
-      "adds       r1, r0" br
-      "adcs       r2, r3" br
-      "adcs       r3, r7" br
-      "pop        {r4, r5}" br
-      "mov        r6, lr" br
-      "mov        r7, lr" br
-      "eors       r0, r6" br
-      "eors       r1, r6" br
-      "eors       r2, r6" br
-      "eors       r3, r6" br
-      "asrs       r6, #1" br
-      "adcs       r0, r4" br
-      "adcs       r1, r5" br
-      "adcs       r4, r2" br
-      "adcs       r5, r3" br
-      "eors       r2, r2" br
-      "adcs       r6, r2" br
-      "adcs       r7, r2" br
-      "pop        {r2, r3}" br
-      "mov        r8, r2" br
-      "mov        r9, r3" br
-      "adds       r2, r0" br
-      "adcs       r3, r1" br
-      "mov        r0, r10" br
-      "mov        r1, r12" br
-      "adcs       r4, r0" br
-      "adcs       r5, r1" br
-      "adcs       r6, r0" br
-      "adcs       r7, r1" br
+      "eors       r1, r7" __
+      "eors       r0, r7" __
+      "eors       r4, r4" __
+      "asrs       r7, #1" __
+      "adcs       r1, r2" __
+      "adcs       r2, r0" __
+      "adcs       r7, r4" __
+      "mov        r0, r8" __
+      "adds       r1, r0" __
+      "adcs       r2, r3" __
+      "adcs       r3, r7" __
+      "pop        {r4, r5}" __
+      "mov        r6, lr" __
+      "mov        r7, lr" __
+      "eors       r0, r6" __
+      "eors       r1, r6" __
+      "eors       r2, r6" __
+      "eors       r3, r6" __
+      "asrs       r6, #1" __
+      "adcs       r0, r4" __
+      "adcs       r1, r5" __
+      "adcs       r4, r2" __
+      "adcs       r5, r3" __
+      "eors       r2, r2" __
+      "adcs       r6, r2" __
+      "adcs       r7, r2" __
+      "pop        {r2, r3}" __
+      "mov        r8, r2" __
+      "mov        r9, r3" __
+      "adds       r2, r0" __
+      "adcs       r3, r1" __
+      "mov        r0, r10" __
+      "mov        r1, r12" __
+      "adcs       r4, r0" __
+      "adcs       r5, r1" __
+      "adcs       r6, r0" __
+      "adcs       r7, r1" __
       // MUL128 END
-      "pop        {r0}" br
-      "stm        r0!, {r2-r7}" br
-      "pop        {r3-r5}" br
-      "mov        r8, r3" br
-      "mov        r9, r4" br
-      "mov        r10, r5" br
-      "pop        {r4-r7, pc}" br
+      "pop        {r0}" __
+      "stm        r0!, {r2-r7}" __
+      "pop        {r3-r5}" __
+      "mov        r8, r3" __
+      "mov        r9, r4" __
+      "mov        r10, r5" __
+      "pop        {r4-r7, pc}" __
       : : : "r0","r1","r2","r3","r12","lr","cc","memory"
    );
    // clang-format on
@@ -1335,259 +1335,259 @@ void _naked bigint_sqr(uint32_t *r, const uint32_t *x)
 
    // clang-format off
    asm(
-      ".syntax unified" br
+      ".syntax unified" __
       // sqr 256 Refined Karatsuba
-      "push       {r4-r7, lr}" br
-      "mov        r3, r8" br
-      "mov        r4, r9" br
-      "mov        r5, r10" br
-      "mov        r6, r11" br
-      "push       {r3-r6}" br
-      "mov        lr, r0" br
-      "ldm        r1!, {r4-r7}" br
+      "push       {r4-r7, lr}" __
+      "mov        r3, r8" __
+      "mov        r4, r9" __
+      "mov        r5, r10" __
+      "mov        r6, r11" __
+      "push       {r3-r6}" __
+      "mov        lr, r0" __
+      "ldm        r1!, {r4-r7}" __
       // sqr 128 Refined Karatsuba.
       // Input in r4..r7, result in r0..r7, clobbers all except r14.
-      "mov        r0, r4" br
-      "mov        r1, r5" br
-      "subs       r0, r6" br
-      "sbcs       r1, r7" br
-      "sbcs       r2, r2" br
-      "eors       r0, r2" br
-      "eors       r1, r2" br
-      "subs       r0, r2" br
-      "sbcs       r1, r2" br
-      "mov        r8, r0" br
-      "mov        r9, r1" br
-      "mov        r10, r6" br
+      "mov        r0, r4" __
+      "mov        r1, r5" __
+      "subs       r0, r6" __
+      "sbcs       r1, r7" __
+      "sbcs       r2, r2" __
+      "eors       r0, r2" __
+      "eors       r1, r2" __
+      "subs       r0, r2" __
+      "sbcs       r1, r2" __
+      "mov        r8, r0" __
+      "mov        r9, r1" __
+      "mov        r10, r6" __
       // sqr 64 Refined Karatsuba.
       // Input in r4,r5, result in r0-r3, clobbers: r4-r6
       // START: sqr 32
       // Input in r4, result in r0 ,r1, clobbers: r2, r3
-      "uxth       r0, r4" br
-      "lsrs       r1, r4, #16" br
-      "mov        r2, r0" br
-      "muls       r2, r1" br
-      "muls       r0, r0" br
-      "muls       r1, r1" br
-      "lsrs       r3, r2, #15" br
-      "lsls       r2, r2, #17" br
-      "adds       r0, r2" br
-      "adcs       r1, r3" br
+      "uxth       r0, r4" __
+      "lsrs       r1, r4, #16" __
+      "mov        r2, r0" __
+      "muls       r2, r1" __
+      "muls       r0, r0" __
+      "muls       r1, r1" __
+      "lsrs       r3, r2, #15" __
+      "lsls       r2, r2, #17" __
+      "adds       r0, r2" __
+      "adcs       r1, r3" __
       // End: sqr 32, result in r0 ,r1
-      "subs       r4, r5" br
-      "sbcs       r6, r6" br
-      "eors       r4, r6" br
-      "subs       r4, r6" br
+      "subs       r4, r5" __
+      "sbcs       r6, r6" __
+      "eors       r4, r6" __
+      "subs       r4, r6" __
       // START: sqr 32
       // Input in r5, result in r2 ,r3, clobbers: r5, r6
-      "uxth       r2, r5" br
-      "lsrs       r3, r5, #16" br
-      "mov        r5, r2" br
-      "muls       r5, r3" br
-      "muls       r2, r2" br
-      "muls       r3, r3" br
-      "lsrs       r6, r5, #15" br
-      "lsls       r5, #17" br
-      "adds       r2, r5" br
-      "adcs       r3, r6" br
+      "uxth       r2, r5" __
+      "lsrs       r3, r5, #16" __
+      "mov        r5, r2" __
+      "muls       r5, r3" __
+      "muls       r2, r2" __
+      "muls       r3, r3" __
+      "lsrs       r6, r5, #15" __
+      "lsls       r5, #17" __
+      "adds       r2, r5" __
+      "adcs       r3, r6" __
       // End: sqr 32, result in r2 ,r3
-      "movs       r6, #0" br
-      "adds       r2, r1" br
-      "adcs       r3, r6" br
+      "movs       r6, #0" __
+      "adds       r2, r1" __
+      "adcs       r3, r6" __
       // START: sqr 32
       // Input in r4, result in r4 ,r5, clobbers: r1, r6
-      "lsrs       r5, r4, #16" br
-      "uxth       r4, r4" br
-      "mov        r1, r4" br
-      "muls       r1, r5" br
-      "muls       r4, r4" br
-      "muls       r5, r5" br
-      "lsrs       r6, r1, #15" br
-      "lsls       r1, #17" br
-      "adds       r4, r1" br
-      "adcs       r5, r6" br
+      "lsrs       r5, r4, #16" __
+      "uxth       r4, r4" __
+      "mov        r1, r4" __
+      "muls       r1, r5" __
+      "muls       r4, r4" __
+      "muls       r5, r5" __
+      "lsrs       r6, r1, #15" __
+      "lsls       r1, #17" __
+      "adds       r4, r1" __
+      "adcs       r5, r6" __
       // End: sqr 32, result in r4 ,r5
-      "mov        r1, r2" br
-      "subs       r1, r4" br
-      "sbcs       r2, r5" br
-      "mov        r5, r3" br
-      "movs       r6, #0" br
-      "sbcs       r3, r6" br
-      "adds       r1, r0" br
-      "adcs       r2, r5" br
-      "adcs       r3, r6" br
+      "mov        r1, r2" __
+      "subs       r1, r4" __
+      "sbcs       r2, r5" __
+      "mov        r5, r3" __
+      "movs       r6, #0" __
+      "sbcs       r3, r6" __
+      "adds       r1, r0" __
+      "adcs       r2, r5" __
+      "adcs       r3, r6" __
       // END: sqr 64 Refined Karatsuba
       // Result in r0,r1,r2,r3, leaves r6 zero.
-      "mov        r6, r10" br
-      "mov        r10, r0" br
-      "mov        r11, r1" br
-      "mov        r12, r2" br
-      "mov        r1, r3" br
+      "mov        r6, r10" __
+      "mov        r10, r0" __
+      "mov        r11, r1" __
+      "mov        r12, r2" __
+      "mov        r1, r3" __
       // sqr 64 Refined Karatsuba
       // Input in r6,r7, result in r2-r5, clobbers: r0, r7, r6
       // START: sqr 32
       // Input in r6, result in r2 ,r3, clobbers: r4, r5
-      "uxth       r2, r6" br
-      "lsrs       r3, r6, #16" br
-      "mov        r4, r2" br
-      "muls       r4, r3" br
-      "muls       r2, r2" br
-      "muls       r3, r3" br
-      "lsrs       r5, r4, #15" br
-      "lsls       r4, #17" br
-      "adds       r2, r4" br
-      "adcs       r3, r5" br
+      "uxth       r2, r6" __
+      "lsrs       r3, r6, #16" __
+      "mov        r4, r2" __
+      "muls       r4, r3" __
+      "muls       r2, r2" __
+      "muls       r3, r3" __
+      "lsrs       r5, r4, #15" __
+      "lsls       r4, #17" __
+      "adds       r2, r4" __
+      "adcs       r3, r5" __
       // End: sqr 32, result in r2 ,r3
-      "subs       r6, r7" br
-      "sbcs       r4, r4" br
-      "eors       r6, r4" br
-      "subs       r6, r4" br
+      "subs       r6, r7" __
+      "sbcs       r4, r4" __
+      "eors       r6, r4" __
+      "subs       r6, r4" __
       // START: sqr 32
       // Input in r7, result in r4 ,r5, clobbers: r0, r7
-      "uxth       r4, r7" br
-      "lsrs       r5, r7, #16" br
-      "mov        r0, r4" br
-      "muls       r0, r5" br
-      "muls       r4, r4" br
-      "muls       r5, r5" br
-      "lsrs       r7, r0, #15" br
-      "lsls       r0, #17" br
-      "adds       r4, r0" br
-      "adcs       r5, r7" br
+      "uxth       r4, r7" __
+      "lsrs       r5, r7, #16" __
+      "mov        r0, r4" __
+      "muls       r0, r5" __
+      "muls       r4, r4" __
+      "muls       r5, r5" __
+      "lsrs       r7, r0, #15" __
+      "lsls       r0, #17" __
+      "adds       r4, r0" __
+      "adcs       r5, r7" __
       // End: sqr 32, result in r4 ,r5
-      "movs       r7, #0" br
-      "adds       r4, r3" br
-      "adcs       r5, r7" br
+      "movs       r7, #0" __
+      "adds       r4, r3" __
+      "adcs       r5, r7" __
       // START: sqr 32
       // Input in r6, result in r7 ,r0, clobbers: r6, r3
-      "uxth       r7, r6" br
-      "lsrs       r0, r6, #16" br
-      "mov        r6, r7" br
-      "muls       r6, r0" br
-      "muls       r7, r7" br
-      "muls       r0, r0" br
-      "lsrs       r3, r6, #15" br
-      "lsls       r6, #17" br
-      "adds       r7, r6" br
-      "adcs       r0, r3" br
+      "uxth       r7, r6" __
+      "lsrs       r0, r6, #16" __
+      "mov        r6, r7" __
+      "muls       r6, r0" __
+      "muls       r7, r7" __
+      "muls       r0, r0" __
+      "lsrs       r3, r6, #15" __
+      "lsls       r6, #17" __
+      "adds       r7, r6" __
+      "adcs       r0, r3" __
       // End: sqr 32, result in r7 ,r0
-      "mov        r3, r4" br
-      "subs       r3, r7" br
-      "sbcs       r4, r0" br
-      "mov        r0, r5" br
-      "movs       r6, #0" br
-      "sbcs       r5, r6" br
-      "adds       r3, r2" br
-      "adcs       r4, r0" br
-      "adcs       r5, r6" br
+      "mov        r3, r4" __
+      "subs       r3, r7" __
+      "sbcs       r4, r0" __
+      "mov        r0, r5" __
+      "movs       r6, #0" __
+      "sbcs       r5, r6" __
+      "adds       r3, r2" __
+      "adcs       r4, r0" __
+      "adcs       r5, r6" __
       // END: sqr 64 Refined Karatsuba
       // Result in r2, r3, r4, r5, leaves r6 zero.
-      "mov        r0, r12" br
-      "adds       r2, r0" br
-      "adcs       r3, r1" br
-      "adcs       r4, r6" br
-      "adcs       r5, r6" br
-      "mov        r12, r2" br
-      "mov        r2, r8" br
-      "mov        r8, r3" br
-      "mov        r3, r9" br
-      "mov        r9, r4" br
+      "mov        r0, r12" __
+      "adds       r2, r0" __
+      "adcs       r3, r1" __
+      "adcs       r4, r6" __
+      "adcs       r5, r6" __
+      "mov        r12, r2" __
+      "mov        r2, r8" __
+      "mov        r8, r3" __
+      "mov        r3, r9" __
+      "mov        r9, r4" __
       // START: sqr 64 Refined Karatsuba
       // Input in r2,r3, result in r6, r7, r0, r1, clobbers: r2, r3, r4
       // START: sqr 32
       // Input in r2. result in r6 ,r7, clobbers: r0, r1
-      "uxth       r6, r2" br
-      "lsrs       r7, r2, #16" br
-      "mov        r0, r6" br
-      "muls       r0, r7" br
-      "muls       r6, r6" br
-      "muls       r7, r7" br
-      "lsrs       r1, r0, #15" br
-      "lsls       r0, #17" br
-      "adds       r6, r0" br
-      "adcs       r7, r1" br
+      "uxth       r6, r2" __
+      "lsrs       r7, r2, #16" __
+      "mov        r0, r6" __
+      "muls       r0, r7" __
+      "muls       r6, r6" __
+      "muls       r7, r7" __
+      "lsrs       r1, r0, #15" __
+      "lsls       r0, #17" __
+      "adds       r6, r0" __
+      "adcs       r7, r1" __
       // End: sqr 32
       // Result in r6 ,r7
-      "subs       r2, r3" br
-      "sbcs       r4, r4" br
-      "eors       r2, r4" br
-      "subs       r2, r4" br
+      "subs       r2, r3" __
+      "sbcs       r4, r4" __
+      "eors       r2, r4" __
+      "subs       r2, r4" __
       // START: sqr 32
       // Input in r3, result in r0, r1, clobbers: r3, r4
-      "uxth       r0, r3" br
-      "lsrs       r1, r3, #16" br
-      "mov        r3, r0" br
-      "muls       r3, r1" br
-      "muls       r0, r0" br
-      "muls       r1, r1" br
-      "lsrs       r4, r3, #15" br
-      "lsls       r3, #17" br
-      "adds       r0, r3" br
-      "adcs       r1, r4" br
+      "uxth       r0, r3" __
+      "lsrs       r1, r3, #16" __
+      "mov        r3, r0" __
+      "muls       r3, r1" __
+      "muls       r0, r0" __
+      "muls       r1, r1" __
+      "lsrs       r4, r3, #15" __
+      "lsls       r3, #17" __
+      "adds       r0, r3" __
+      "adcs       r1, r4" __
       // End: sqr 32, result in r0 ,r1
-      "movs       r4, #0" br
-      "adds       r0, r7" br
-      "adcs       r1, r4" br
+      "movs       r4, #0" __
+      "adds       r0, r7" __
+      "adcs       r1, r4" __
       // START: sqr 32
       // Input in r2, result in r3, r4, clobbers: r2, r7
-      "uxth       r3, r2" br
-      "lsrs       r4, r2, #16" br
-      "mov        r2, r3" br
-      "muls       r2, r4" br
-      "muls       r3, r3" br
-      "muls       r4, r4" br
-      "lsrs       r7, r2, #15" br
-      "lsls       r2, #17" br
-      "adds       r3, r2" br
-      "adcs       r4, r7" br
+      "uxth       r3, r2" __
+      "lsrs       r4, r2, #16" __
+      "mov        r2, r3" __
+      "muls       r2, r4" __
+      "muls       r3, r3" __
+      "muls       r4, r4" __
+      "lsrs       r7, r2, #15" __
+      "lsls       r2, #17" __
+      "adds       r3, r2" __
+      "adcs       r4, r7" __
       // End: sqr 32, result in r3, r4
-      "mov        r7, r0" br
-      "subs       r7, r3" br
-      "sbcs       r0, r4" br
-      "mov        r2, r1" br
-      "movs       r4, #0" br
-      "sbcs       r1, r4" br
-      "adds       r7, r6" br
-      "adcs       r0, r2" br
-      "adcs       r1, r4" br
+      "mov        r7, r0" __
+      "subs       r7, r3" __
+      "sbcs       r0, r4" __
+      "mov        r2, r1" __
+      "movs       r4, #0" __
+      "sbcs       r1, r4" __
+      "adds       r7, r6" __
+      "adcs       r0, r2" __
+      "adcs       r1, r4" __
       // END: sqr 64 Refined Karatsuba
       // Result in r6, r7, r0, r1, returns r4 as zero.
-      "mov        r2, r12" br
-      "mov        r3, r8" br
-      "mov        r4, r9" br
-      "subs       r2, r6" br
-      "sbcs       r3, r7" br
-      "mov        r6, r4" br
-      "mov        r7, r5" br
-      "sbcs       r4, r0" br
-      "sbcs       r5, r1" br
-      "movs       r0, #0" br
-      "sbcs       r6, r0" br
-      "sbcs       r7, r0" br
-      "mov        r0, r10" br
-      "adds       r2, r0" br
-      "mov        r1, r11" br
-      "adcs       r3, r1" br
-      "mov        r0, r12" br
-      "adcs       r4, r0" br
-      "mov        r0, r8" br
-      "adcs       r5, r0" br
-      "movs       r0, #0" br
-      "adcs       r6, r0" br
-      "adcs       r7, r0" br
-      "mov        r0, r10" br
+      "mov        r2, r12" __
+      "mov        r3, r8" __
+      "mov        r4, r9" __
+      "subs       r2, r6" __
+      "sbcs       r3, r7" __
+      "mov        r6, r4" __
+      "mov        r7, r5" __
+      "sbcs       r4, r0" __
+      "sbcs       r5, r1" __
+      "movs       r0, #0" __
+      "sbcs       r6, r0" __
+      "sbcs       r7, r0" __
+      "mov        r0, r10" __
+      "adds       r2, r0" __
+      "mov        r1, r11" __
+      "adcs       r3, r1" __
+      "mov        r0, r12" __
+      "adcs       r4, r0" __
+      "mov        r0, r8" __
+      "adcs       r5, r0" __
+      "movs       r0, #0" __
+      "adcs       r6, r0" __
+      "adcs       r7, r0" __
+      "mov        r0, r10" __
       // END: sqr 128 Refined Karatsuba
-      "mov        r8, r7" br
-      "mov        r7, lr" br
-      "stm        r7!, {r0-r6}" br
-      "mov        r6, r8" br
-      "stm        r7!, {r6}" br
-      "pop        {r3-r6}" br
-      "mov        r8, r3" br
-      "mov        r9, r4" br
-      "mov        r10, r5" br
-      "mov        r11, r6" br
-      "pop        {r4-r7, pc}" br
+      "mov        r8, r7" __
+      "mov        r7, lr" __
+      "stm        r7!, {r0-r6}" __
+      "mov        r6, r8" __
+      "stm        r7!, {r6}" __
+      "pop        {r3-r6}" __
+      "mov        r8, r3" __
+      "mov        r9, r4" __
+      "mov        r10, r5" __
+      "mov        r11, r6" __
+      "pop        {r4-r7, pc}" __
       : : : "r0","r1","r2","r3","r12","lr","cc","memory"
    );
    // clang-format on
