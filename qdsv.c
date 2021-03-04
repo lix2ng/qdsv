@@ -228,7 +228,7 @@ static int fe1271_has_sqrt(
 }
 
 /*
- * 512+=256 large integer addition, possibly starting at an offset of x.
+ * 512+=256 large integer addition, possibly starting at an offset in x.
  * Changed from r=x+y to in-place addition x+=y. 48 invocations.
  */
 static void large_add(uint32_t *x, const uint32_t *y, uint os)
@@ -432,6 +432,62 @@ static const uint8_t mu_4 = 0x03;
 
 #if CONF_QDSA_FULL
 /* Conditional kpoint swap for constant-time Ladder. */
+#ifdef __thumb__
+static void _naked ct_swap(kpoint *x, kpoint *y, int b)
+{
+   // clang-format off
+   asm(
+      ".syntax unified" __
+      "push       {r4-r7}" __
+      "rsbs       r2, #0" __
+#ifdef __thumb2__
+      /*
+       * Thumb-2: 2-word batch assembler saves 74Kc over C. Doing 4-word batch
+       * only gives small return since this is not load/store dominant.
+       */
+      "add        r12, r0, #64" __
+   "1:" __
+      "ldm        r0, {r4, r5}" __
+      "ldm        r1, {r6, r7}" __
+      "eor        r3, r4, r6" __
+      "ands       r3, r2" __
+      "eors       r4, r3" __
+      "eors       r6, r3" __
+      "eor        r3, r5, r7" __
+      "ands       r3, r2" __
+      "eors       r5, r3" __
+      "eors       r7, r3" __
+#else
+      "adds       r0, #64" __
+      "mov        r12, r0" __
+      "subs       r0, #64" __
+   "1:" __
+      "ldr        r4, [r0]" __
+      "ldr        r5, [r0, #4]" __
+      "ldr        r6, [r1]" __
+      "ldr        r7, [r1, #4]" __
+      "mov        r3, r4" __
+      "eors       r3, r6" __
+      "ands       r3, r2" __
+      "eors       r4, r3" __
+      "eors       r6, r3" __
+      "mov        r3, r5" __
+      "eors       r3, r7" __
+      "ands       r3, r2" __
+      "eors       r5, r3" __
+      "eors       r7, r3" __
+#endif
+      "stm        r0!, {r4, r5}" __
+      "stm        r1!, {r6, r7}" __
+      "cmp        r0, r12" __
+      "blo        1b" __
+      "pop        {r4-r7}" __
+      "bx         lr" __
+      : : : "r0","r1","r2","r3","r12","cc","memory"
+   );
+   // clang-format on
+}
+#else
 static void ct_swap(kpoint *x, kpoint *y, int b)
 {
    uint32_t *X = (uint32_t *)x;
@@ -445,6 +501,7 @@ static void ct_swap(kpoint *x, kpoint *y, int b)
       Y[i] ^= t;
    }
 }
+#endif
 #endif
 
 /*
